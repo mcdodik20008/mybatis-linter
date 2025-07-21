@@ -1,0 +1,118 @@
+build:
+  maxIssues: 0
+
+exceptions:
+  active: true
+
+  # Запрещает выбрасывать исключения в equals, hashCode, finalize, toString
+  ExceptionRaisedInUnexpectedLocation:
+    active: true
+    methodNames: ['equals', 'finalize', 'hashCode', 'toString']
+
+  # Предупреждает if (e is SomeException) — лучше обрабатывать через catch
+  InstanceOfCheckForException:
+    active: true
+    excludes: ['**/test/**']
+
+  # Запрещает printStackTrace() — логгер использовать
+  PrintStackTrace:
+    active: true
+
+  # Предупреждает повторный throw e без логирования/обёртки
+  RethrowCaughtException:
+    active: true
+
+  # Запрещает return из finally — теряется контроль потока
+  ReturnFromFinally:
+    active: true
+    ignoreLabeled: false
+
+  # Запрещает проглатывать исключения — хотя бы логируй
+  SwallowedException:
+    active: true
+    ignoredExceptionTypes:
+      - 'InterruptedException'
+      - 'MalformedURLException'
+      - 'NumberFormatException'
+      - 'ParseException'
+    allowedExceptionNameRegex: '_|(ignore|expected).*'
+
+  # Запрещает throw из finally — может потеряться оригинальный exception
+  ThrowingExceptionFromFinally:
+    active: true
+
+  # Обязует писать message или cause у exception'ов
+  ThrowingExceptionsWithoutMessageOrCause:
+    active: true
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
+    exceptions:
+      - 'ArrayIndexOutOfBoundsException'
+      - 'Exception'
+      - 'IllegalArgumentException'
+      - 'IllegalMonitorStateException'
+      - 'IllegalStateException'
+      - 'IndexOutOfBoundsException'
+      - 'NullPointerException'
+      - 'RuntimeException'
+      - 'Throwable'
+
+  # Предотвращает повторный выброс такого же исключения без сохранения stacktrace
+  ThrowingNewInstanceOfSameException:
+    active: true
+
+  # Запрещает ловить слишком общие исключения
+  TooGenericExceptionCaught:
+    active: false
+    excludes: ['**/test/**']
+    exceptionNames:
+      - 'ArrayIndexOutOfBoundsException'
+      - 'Error'
+      - 'Exception'
+      - 'IllegalMonitorStateException'
+      - 'IndexOutOfBoundsException'
+      - 'NullPointerException'
+      - 'RuntimeException'
+      - 'Throwable'
+    allowedExceptionNameRegex: '_|(ignore|expected).*'
+
+  # Запрещает бросать слишком общие исключения
+  TooGenericExceptionThrown:
+    active: false
+    exceptionNames:
+      - 'Error'
+      - 'Exception'
+      - 'RuntimeException'
+      - 'Throwable'
+
+config:
+  validation: true
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+style:
+  active: false
+
+comments:
+  active: false
+
+complexity:
+  active: false
+
+empty-blocks:
+  active: false
+
+naming:
+  active: false
+
+performance:
+  active: false
+
+potential-bugs:
+  active: false
+
+coroutines:
+  active: false

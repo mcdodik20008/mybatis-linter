@@ -1,4 +1,20 @@
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+pluginManagement {
+    if (System.getenv("nexusUrl") != null) {
+        repositories {
+            mavenLocal()
+            maven(url = uri(System.getenv("nexusUrl")))
+        }
+    } else {
+        repositories {
+            mavenLocal()
+//            maven(url = uri("https://plugins.gradle.org/m2/"))
+            maven(url = "https://nexus.supercode.ru/repository/rosreestr-public/")
+        }
+    }
 }
-rootProject.name = "sql-linter-plugin"
+
+rootProject.name = "rr-mybatis-linter"
+
+include(
+    ":rrbpm-mybatis-linter",
+)

@@ -1,0 +1,175 @@
+build:
+  maxIssues: 0
+
+empty-blocks:
+  active: true
+
+  # Блокировка пустых блоков catch (если имя исключения не разрешено)
+  EmptyCatchBlock:
+    active: true
+    allowedExceptionNameRegex: '_|(ignore|expected).*'
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет на пустые тела классов
+  EmptyClassBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет на пустой конструктор по умолчанию
+  EmptyDefaultConstructor:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет пустых do-while блоков
+  EmptyDoWhileBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет пустых else
+  EmptyElseBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет на пустой finally-блок
+  EmptyFinallyBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет на пустой блок цикла for
+  EmptyForBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет на пустую функцию
+  EmptyFunctionBlock:
+    active: true
+    ignoreOverridden: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет на пустой if-блок
+  EmptyIfBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Пустой блок инициализации
+  EmptyInitBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Полностью пустой `.kt`-файл
+  EmptyKtFile:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Запрет на пустой вторичный конструктор
+  EmptySecondaryConstructor:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Пустой `try` блок (внутри `try {}`)
+  EmptyTryBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Пустой `when` блок
+  EmptyWhenBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+  # Пустой `while` блок
+  EmptyWhileBlock:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/test/**'
+
+config:
+  validation: true
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+style:
+  active: false
+
+comments:
+  active: false
+
+complexity:
+  active: false
+
+exceptions:
+  active: false
+
+naming:
+  active: false
+
+performance:
+  active: false
+
+potential-bugs:
+  active: false
+
+coroutines:
+  active: false

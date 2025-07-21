@@ -1,0 +1,85 @@
+debug: ${RR_SPRING_DEBUG:false}
+
+spring:
+  jmx:
+    enabled: true
+  application:
+    name: user-profile-service-app
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: ${UPS_POSTGRES_URL}
+    username: ${UPS_POSTGRES_USER}
+    password: ${UPS_POSTGRES_PASSWORD}
+    hikari:
+      pool-name: ups-jdbc-pool
+      minimum-idle: ${HIKARI_MIN_IDLE:1}
+      idle-timeout: ${HIKARI_IDLE_TIMEOUT:20000}
+      maximum-pool-size: ${MAX_HIKARI_POOL_SIZE:2}
+      connection-timeout: ${HIKARI_CONNECTION_TIMEOUT:10000}
+      connection-test-query: ${POSTGRES_UPS_TEST_QUERY:SELECT count(*) FROM rrbpm_ups.sia_user WHERE login = 'connection-test-query';}
+  config:
+    import: ${import-path}
+  profiles:
+    active: ${SCC_SERVER_PROFILES:develop}
+  webflux:
+    # Необходимо для корректной работы API в реактивных приложениях!
+    base-path: ${SERVER_SERVLET_CONTEXT_PATH:/user-profile-service-app}
+  kafka:
+    security:
+      protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+    bootstrap-servers: ${SCCS_KAFKA_BOOTSTRAP_SERVERS:kafka:9092}
+    ssl:
+      trust-store-location: ${KAFKA_URL_SSL_TRUSTSTORE_LOCATION:}
+      trust-store-password: ${KAFKA_SSL_TRUSTSTORE_PASSWORD:}
+
+  security:
+    oauth2:
+      client:
+        registration:
+          avanpost:
+            authorization-grant-type: client_credentials
+            client-id: ${PIBP_CLIENT_ID}
+            client-secret: ${PIBP_CLIENT_SECRET}
+        provider:
+          avanpost:
+            user-name-attribute: preferred_username
+            authorization-uri: ${APP_AVANPOST_URL}/oauth2/authorize
+            token-uri: ${APP_AVANPOST_URL}/oauth2/token
+            jwk-set-uri: ${APP_AVANPOST_URL}/oauth2/public_keys
+  quartz:
+    job-store-type: jdbc #Указываем, что будем хранить информацию о джобах в БД, а не в памяти
+    jdbc:
+      initialize-schema: never #Мы будем инициализировать схему БД вручную, поэтому ставим never
+      schema: rrbpm_ups
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO #Используем AUTO, для того, чтобы каждый новый инстанс Scheduler`a имел уникальное название.
+          jobStore:
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate #Указываем диалект для запросов к БД
+            useProperties: true #Указываем, что все данные в БД будут храниться в качестве строк, а не в двоичном формате
+            tablePrefix: rrbpm_ups.QRTZ_  #Префикс таблиц в БД
+            clusterCheckinInterval: 10000 #Указываем частоту сверки инстанса Scheduler с остальными инстансами в кластере
+            isClustered: true #Включаем режим работы в кластере
+          threadPool: #Указываем настройки для создания пула поток, на котором будут выполняться джобы
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 10
+            threadsInheritContextClassLoaderOfInitializingThread: true
+    auto-startup: false #Выключаем автоматический старт для scheduler, т.к. запуск будет выполнен вручную
+
+management:
+  endpoints:
+    jmx:
+      exposure:
+        include: "*"
+    web:
+      base-path: /actuator
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always

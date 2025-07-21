@@ -1,0 +1,177 @@
+build:
+  maxIssues: 9999 # пока поставлю большое число, что бы сборка не падала
+
+complexity:
+  active: true
+
+  # Метод с высокой когнитивной сложностью (много ветвлений, switch, условий, вложенности)
+  # Рекомендуется включать для критичных модулей, но шумит
+  CognitiveComplexMethod:
+    active: false
+    threshold: 15
+
+  # Сложные условия `if`, `when`, `while`, объединённые логикой (&&, ||, ?:)
+  ComplexCondition:
+    active: true
+    threshold: 4
+
+  # Интерфейс с большим количеством методов — нарушает SRP
+  ComplexInterface:
+    active: false
+    threshold: 10
+    includeStaticDeclarations: false
+    includePrivateDeclarations: false
+    ignoreOverloaded: false
+
+  # Слишком много логических путей (циклы, ветвления, логика)
+  CyclomaticComplexMethod:
+    active: true
+    threshold: 15
+    ignoreSingleWhenExpression: false
+    ignoreSimpleWhenEntries: false
+    ignoreNestingFunctions: false
+    nestingFunctions:
+      - 'also'
+      - 'apply'
+      - 'forEach'
+      - 'isNotNull'
+      - 'ifNull'
+      - 'let'
+      - 'run'
+      - 'use'
+      - 'with'
+
+  # Использование label'ов (`foo@ for (...)`) — антипаттерн, снижает читаемость
+  LabeledExpression:
+    active: false
+    ignoredLabels: []
+
+  # Классы, содержащие более 600 строк — нарушает SRP и нарушает читаемость
+  LargeClass:
+    active: true
+    threshold: 600
+
+  # Методы длиннее N строк — сложно читать, тестировать и сопровождать
+  LongMethod:
+    active: true
+    threshold: 100
+
+  # Много параметров в функции → плохой API-дизайн
+  LongParameterList:
+    active: true
+    functionThreshold: 6
+    constructorThreshold: 7
+    ignoreDefaultParameters: false
+    ignoreDataClasses: true
+    ignoreAnnotatedParameter: []
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/*Mapper.kt'
+      - '**/*Config.kt'
+      - '**/config/**'
+      - '**/mybatis/**'
+
+  # Перегрузка одного и того же метода слишком много раз — сбивает с толку
+  MethodOverloading:
+    active: false
+    threshold: 6
+
+  # Предлагает использовать именованные аргументы при длинных вызовах — субъективно
+  NamedArguments:
+    active: false
+    threshold: 3
+    ignoreArgumentsMatchingNames: false
+
+  # Слишком глубокая вложенность блоков `{}` — ухудшает читаемость и модульность
+  NestedBlockDepth:
+    active: true
+    threshold: 5
+
+  # Использование вложенных scope-функций (`let { run { apply { } } }`) — можно запутаться
+  NestedScopeFunctions:
+    active: false
+    threshold: 1
+    functions:
+      - 'kotlin.apply'
+      - 'kotlin.run'
+      - 'kotlin.with'
+      - 'kotlin.let'
+      - 'kotlin.also'
+
+  # Рекомендует заменить цепочку `a?.b?.c?.let {}` на `a?.b?.c?.run {}` — скорее косметика
+  ReplaceSafeCallChainWithRun:
+    active: false
+
+  # ️ Обнаруживает дублирующиеся строковые литералы — может шуметь, но иногда полезно
+  StringLiteralDuplication:
+    active: false
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/*Controller.kt'
+      - '**/*Config.kt'
+      - '**/test/**'
+      - '**/api/**'
+      - '**/config/**'
+
+    threshold: 3
+    ignoreAnnotation: true
+    excludeStringsWithLessThan5Characters: true
+    ignoreStringsRegex: '$^'
+
+  # Слишком много функций в одном классе, интерфейсе и т.д.
+  TooManyFunctions:
+    active: true
+    excludes:
+      - '**/Application.kt'
+      - '**/*Test.kt'
+      - '**/*Tests.kt'
+      - '**/*Controller.kt'
+      - '**/*Config.kt'
+      - '**/test/**'
+      - '**/api/**'
+      - '**/config/**'
+    thresholdInFiles: 11
+    thresholdInClasses: 11
+    thresholdInInterfaces: 11
+    thresholdInObjects: 11
+    thresholdInEnums: 11
+    ignoreDeprecated: false
+    ignorePrivate: false
+    ignoreOverridden: false
+
+config:
+  validation: true
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+style:
+  active: false
+
+comments:
+  active: false
+
+empty-blocks:
+  active: false
+
+exceptions:
+  active: false
+
+naming:
+  active: false
+
+performance:
+  active: false
+
+potential-bugs:
+  active: false
+
+coroutines:
+  active: false
