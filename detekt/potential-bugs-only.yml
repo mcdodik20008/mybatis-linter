@@ -1,0 +1,194 @@
+build:
+  maxIssues: 0
+
+potential-bugs:
+  active: true
+
+  # Проверяет `a === b` для String — скорее всего ошибка, нужно `==`
+  AvoidReferentialEquality:
+    active: true
+    forbiddenTypePatterns:
+      - 'kotlin.String'
+
+  # Ловит ненужные касты в типы вида `String? as String?` — шумит, но иногда полезно
+  CastToNullableType:
+    active: true
+
+  # Использование устаревших методов/аннотаций — можно включить при переходах
+  Deprecation:
+    active: true
+
+  # Не даёт кастовать `List` к `ArrayList`, что может упасть в рантайме
+  DontDowncastCollectionTypes:
+    active: true
+
+  # Используется одновременно `MutableList` и `ArrayList` — может ввести в заблуждение
+  DoubleMutabilityForCollection:
+    active: true
+    mutableTypes:
+      - 'kotlin.collections.MutableList'
+      - 'kotlin.collections.MutableMap'
+      - 'kotlin.collections.MutableSet'
+      - 'java.util.ArrayList'
+      - 'java.util.LinkedHashSet'
+      - 'java.util.HashSet'
+      - 'java.util.LinkedHashMap'
+      - 'java.util.HashMap'
+
+  # Если в `when` по enum есть `else` — может не сработать при добавлении новых значений
+  ElseCaseInsteadOfExhaustiveWhen:
+    active: true
+
+  # equals() всегда возвращает true/false — значит, нарушена логика сравнения
+  EqualsAlwaysReturnsTrueOrFalse:
+    active: true
+
+  # Есть equals(), но нет hashCode() — нарушает контракт, баг в `Map`, `Set`, и т.п.
+  EqualsWithHashCodeExist:
+    active: true
+
+  # Использование `exitProcess()` вне `main()` — скорее всего ошибка
+  ExitOutsideMain:
+    active: true
+
+  # Вызов `System.gc()` вручную — антипаттерн
+  ExplicitGarbageCollectionCall:
+    active: true
+
+  # Использование неявных платформенных типов (Java) — может привести к NPE
+  HasPlatformType:
+    active: true
+
+  # Игнорируется значение функции (например, `buildSomething()`), которое нельзя игнорировать
+  IgnoredReturnValue:
+    active: true
+    restrictToConfig: true
+    returnValueAnnotations:
+      - '*.CheckResult'
+      - '*.CheckReturnValue'
+    ignoreReturnValueAnnotations:
+      - '*.CanIgnoreReturnValue'
+    returnValueTypes:
+      - 'kotlin.sequences.Sequence'
+      - 'kotlinx.coroutines.flow.*Flow'
+      - 'java.util.stream.*Stream'
+    ignoreFunctionCall: []
+
+  # Использование методов, зависящих от локали (toUpperCase) без явной локали
+  ImplicitDefaultLocale:
+    active: true
+
+  # Не указана `: Unit` явно — может скрыть баг в сигнатуре
+  ImplicitUnitReturnType:
+    active: true
+    allowExplicitReturnType: true
+
+  # Невалидный range: `10..1` — всегда пустой диапазон
+  InvalidRange:
+    active: true
+
+  # В `hasNext()` вызывается `next()` — это может "съесть" элемент
+  IteratorHasNextCallsNextMethod:
+    active: true
+
+  # `next()` не кидает `NoSuchElementException` — нарушает контракт
+  IteratorNotThrowingNoSuchElementException:
+    active: true
+
+  # Использование `lateinit` — можно включить, чтобы запретить, кроме тестов
+  LateinitUsage:
+    active: true
+    excludes:
+      - '**/test/**'
+    ignoreOnClassesPattern: ''
+
+  # `map["key"]!!` — риск NPE, лучше использовать `getOrElse` или `?.let`
+  MapGetWithNotNullAssertionOperator:
+    active: true
+
+  # Проверка на `null` у `var` без `val` или синхронизации — может быть невалидна
+  NullCheckOnMutableProperty:
+    active: true
+
+  # `someNullable.toString()` — может быть `null.toString()`, что не то, что ты ожидал
+  NullableToStringCall:
+    active: true
+
+  # break/return в `while` — можно сделать через условие, читается лучше
+  UnconditionalJumpStatementInLoop:
+    active: true
+
+  # `if (x != null) { ... } else { ... }` — но x не может быть null, лишняя проверка
+  UnnecessaryNotNullCheck:
+    active: true
+
+  # `!!` без нужды — может быть опасен, можно заменить безопасной логикой
+  UnnecessaryNotNullOperator:
+    active: true
+
+  # `x?.doSomething()` — если `x` гарантированно не `null`, то вызов бессмысленный
+  UnnecessarySafeCall:
+    active: true
+
+  # Пустой `catch {}` или `catch (e: ...) {}` который никогда не выполняется
+  UnreachableCatchBlock:
+    active: true
+
+  # Код после `return` / `throw` — он не будет выполнен
+  UnreachableCode:
+    active: true
+
+  # Вызов метода у nullable-объекта без проверки
+  UnsafeCallOnNullableType:
+    active: true
+    excludes:
+      - '**/test/**'
+
+  # `val x = y as T?` — риск ClassCastException
+  UnsafeCast:
+    active: true
+
+  # `!!a` или `-a` — если `a` не используется, может быть бесполезным
+  UnusedUnaryOperator:
+    active: true
+
+  # `x++` без использования результата — бесполезно
+  UselessPostfixExpression:
+    active: true
+
+  # `equals(someOtherType)` — всегда вернёт `false`, вероятно баг
+  WrongEqualsTypeParameter:
+    active: true
+
+config:
+  validation: true
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+style:
+  active: false
+
+comments:
+  active: false
+
+complexity:
+  active: false
+
+empty-blocks:
+  active: false
+
+exceptions:
+  active: false
+
+naming:
+  active: false
+
+performance:
+  active: false
+
+coroutines:
+  active: false
