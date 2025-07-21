@@ -1,0 +1,157 @@
+build:
+  maxIssues: 0
+
+naming:
+  active: true
+
+  # Разрешённые префиксы для boolean-свойств (isActive, hasData и т.п.)
+  BooleanPropertyNaming:
+    active: true
+    allowedPattern: '^(is|has|are)'
+    ignoreOverridden: true
+
+  # PascalCase (CamelCase с заглавной) для имён классов
+  ClassNaming:
+    active: true
+    classPattern: '[A-Z][a-zA-Z0-9]*'
+
+  # camelCase для параметров конструктора
+  ConstructorParameterNaming:
+    active: true
+    parameterPattern: '[a-z][A-Za-z0-9]*'
+    privateParameterPattern: '[a-z][A-Za-z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+
+  # UPPER_CASE или CamelCase с подчёркиваниями — для значений enum
+  EnumNaming:
+    active: true
+    enumEntryPattern: '[A-Z][_a-zA-Z0-9]*'
+
+  # Блочит опасные названия классов (MyClass, Manager и т.д.)
+  ForbiddenClassName:
+    active: false
+    forbiddenName: ['Manager', 'Helper']
+
+  # Ограничение на длину имён функций
+  FunctionMaxLength:
+    active: true
+    maximumFunctionNameLength: 64
+
+  # Минимальная длина имён функций
+  FunctionMinLength:
+    active: true
+    minimumFunctionNameLength: 3
+
+  # camelCase для имён функций
+  FunctionNaming:
+    active: true
+    excludes: ['**/test/**']
+    functionPattern: '[a-z][a-zA-Z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+
+  # camelCase для параметров функций
+  FunctionParameterNaming:
+    active: true
+    parameterPattern: '[a-z][A-Za-z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+
+  # Проверка на допустимые package'и (например: com.myproject.module)
+  InvalidPackageDeclaration:
+    active: true
+    rootPackage: 'com.bftcom'
+    requireRootInDeclaration: false
+
+  # Правила для имён параметров лямбд (по умолчанию разрешаем _, а можно запретить)
+  LambdaParameterNaming:
+    active: false
+    parameterPattern: '[a-z][A-Za-z0-9]*|_'
+
+  # Проверяет, что имя top-level класса совпадает с названием файла
+  MatchingDeclarationName:
+    active: true
+    mustBeFirst: true
+
+  # Предотвращает совпадение имени свойства и класса
+  MemberNameEqualsClassName:
+    active: true
+    ignoreOverridden: true
+
+  # Запрещает скрывать переменные внутри scope (например: val user = ..., потом val user = ...)
+  NoNameShadowing:
+    active: true
+
+  # Запрещает is-имена для не-булевых свойств
+  NonBooleanPropertyPrefixedWithIs:
+    active: true
+
+  # camelCase для свойств объектов, включая const
+  ObjectPropertyNaming:
+    active: true
+    constantPattern: '[A-Za-z][_A-Za-z0-9]*'
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+    privatePropertyPattern: '(_)?[A-Za-z][_A-Za-z0-9]*'
+
+  # snake_case или camelCase для package-имен
+  PackageNaming:
+    active: true
+    packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9]*)*'
+
+  # Имена top-level переменных (вне классов и объектов)
+  TopLevelPropertyNaming:
+    active: true
+    constantPattern: '[A-Z][_A-Z0-9]*'
+    propertyPattern: '[A-Za-z][_A-Za-z0-9]*'
+    privatePropertyPattern: '_?[A-Za-z][_A-Za-z0-9]*'
+
+  # Ограничения на длину имён переменных
+  VariableMaxLength:
+    active: true
+    maximumVariableNameLength: 64
+
+  VariableMinLength:
+    active: true
+    minimumVariableNameLength: 2
+
+  # Имена переменных внутри классов, функций и т.п.
+  VariableNaming:
+    active: true
+    variablePattern: '[a-z][A-Za-z0-9]*'
+    privateVariablePattern: '(_)?[a-z][A-Za-z0-9]*'
+    excludeClassPattern: '$^'
+    ignoreOverridden: true
+
+config:
+  validation: true
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+style:
+  active: false
+
+comments:
+  active: false
+
+complexity:
+  active: false
+
+empty-blocks:
+  active: false
+
+exceptions:
+  active: false
+
+performance:
+  active: false
+
+potential-bugs:
+  active: false
+
+coroutines:
+  active: false

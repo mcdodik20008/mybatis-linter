@@ -1,5 +1,4 @@
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
 }
-rootProject.name = "sql-linter-pluginn"
-
+rootProject.name = "sql-linter-plugin"

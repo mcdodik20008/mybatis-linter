@@ -1,0 +1,132 @@
+style:
+
+  # Запрещает "магические числа" в коде, требует выносить их в константы
+  MagicNumber:
+    active: false
+    ignoreNumbers: ["-1", "0", "1"]  # Разрешаем базовые числовые значения
+    ignoreHashCodeFunction: true
+    ignoreAnnotation: true
+    ignoreEnums: true
+    ignoreRanges: true
+
+  # Лимит на длину строки
+  MaxLineLength:
+    active: true
+    maxLineLength: 240 # По стандарту 120, но иногда действительно не хватает. Если 240 не хватает, то нужно лечиться
+    excludePackageStatements: true
+    excludeImportStatements: true
+    excludeCommentStatements: false
+
+  # Запрещает `import foo.*`, требует явные импорты
+  WildcardImport:
+    active: true
+
+  # Убирает явный `: Unit` из сигнатур, если он не обязателен
+  OptionalUnit:
+    active: true
+
+  # Контролирует количество `return` в функции — ограничивает сложность
+  ReturnCount:
+    active: true
+    max: 2
+    excludedFunctions:
+      - equals
+      - hashCode
+      - toString
+
+  # Запрещает оставлять в коде послания потомкам
+  ForbiddenComment:
+    active: true
+    values: ['TODO', 'FIXME', 'println']
+
+  # Ограничивает количество `break`/`continue`/`return` в одном цикле
+  LoopWithTooManyJumpStatements:
+    active: true
+    maxJumpCount: 2
+
+  # Запрещает `private` visibility у вложенных классов — они и так private
+  NestedClassesVisibility:
+    active: true
+
+  # Требует новую строку в конце файла (POSIX совместимость)
+  NewLineAtEndOfFile:
+    active: true
+
+  # Требует пустую строку между `package` и `import`
+  SpacingBetweenPackageAndImports:
+    active: true
+
+  # Удаляет неиспользуемые импорты
+  UnusedImports:
+    active: true
+
+  # Убирает лишние модификаторы видимости, например, `public` по умолчанию
+  RedundantVisibilityModifierRule:
+    active: true
+
+  # Убирает явно указанный тип, если его можно вывести автоматически
+  RedundantExplicitType:
+    active: true
+
+  # Предлагает использовать `data class`, если класс подходит по условиям
+  UseDataClass:
+    active: true
+
+  # Запрещает `data class` с изменяемыми свойствами (`var`)
+  DataClassShouldBeImmutable:
+    active: true
+
+  # Ограничивает количество исключений, которые может кидать метод
+  ThrowsCount:
+    active: true
+    max: 4
+
+  # Запрещает лишние пробелы в конце строки
+  TrailingWhitespace:
+    active: true
+
+  # Запрещает подавлять правила `MagicNumber`, `WildcardImport`
+  ForbiddenSuppress:
+    active: true
+    rules: ['MagicNumber', 'WildcardImport']
+
+  # Объединяет вложенные `if` в один (если можно)
+  CollapsibleIfStatements:
+    active: true
+
+  # Предпочитает `to` вместо `Pair(a, b)` при создании пар
+  PreferToOverPairSyntax:
+    active: true
+
+config:
+  validation: true
+
+processors:
+  active: true
+
+console-reports:
+  active: true
+
+comments:
+  active: false
+
+complexity:
+  active: false
+
+empty-blocks:
+  active: false
+
+exceptions:
+  active: false
+
+naming:
+  active: false
+
+performance:
+  active: false
+
+potential-bugs:
+  active: false
+
+coroutines:
+  active: false
