@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.mcdodik"
-version = "1.0.3.20"
+version = "1.0.3.21"
 
 repositories {
     mavenCentral()

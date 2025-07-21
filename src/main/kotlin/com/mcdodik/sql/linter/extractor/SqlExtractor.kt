@@ -19,7 +19,7 @@ object SqlExtractor {
 
         println("Searching XML: $resourcePath")
 
-        val inputStream: InputStream = XmlFinder.findXmlByPackageName(resourcePath)
+        val inputStream: InputStream = XmlFinderAggregator.findXmlByPackageName(resourcePath)
             ?: return emptyList()
 
         return ktToSqlCache.getOrPut(resourcePath) {
@@ -65,6 +65,5 @@ object SqlExtractor {
 
     fun clearCache() {
         ktToSqlCache.clear()
-        XmlFinder.clearCache()
     }
 }
