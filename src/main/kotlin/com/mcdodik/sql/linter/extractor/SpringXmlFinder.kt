@@ -8,17 +8,17 @@ class SpringXmlFinder : AbstractXmlFinder() {
     override val logPrefix = "[Spring]"
 
     override fun preloadFromSource() {
-        println("$logPrefix Preloading XML from Spring ResourceResolver...")
+        Printer.pprintln("$logPrefix Preloading XML from Spring ResourceResolver...")
         val resolver = PathMatchingResourcePatternResolver()
 
         try {
             val resources = resolver.getResources("classpath*:com/**/*.xml")
             for (resource in resources) {
-                println("$logPrefix addResourceToCache ${resource.uri}")
+                Printer.pprintln("$logPrefix addResourceToCache ${resource.uri}")
                 addResourceToCache(resource.uri.toString())
             }
         } catch (e: XMLStreamException) {
-            println("$logPrefix Error during Spring preload: ${e.message}")
+            Printer.pprintln("$logPrefix Error during Spring preload: ${e.message}")
         }
     }
 }

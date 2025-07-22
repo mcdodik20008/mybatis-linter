@@ -14,7 +14,7 @@ class NoSelectAllRuleWithGeneratedXmlTest {
 
     @BeforeEach
     fun setup() {
-        val xmlDir = File("src/main/resources/com/example/")
+        val xmlDir = File("src/main/resources/com/mcdodik/")
         xmlDir.mkdirs()
 
         testXmlFile = File(xmlDir, "Test.xml")
@@ -31,7 +31,7 @@ class NoSelectAllRuleWithGeneratedXmlTest {
     fun `should detect SELECT star in generated XML`() {
         val ktFile = compileContentForTest(
             """
-            package com.example
+            package com.mcdodik
             class Test
         """.trimIndent()
         )
@@ -40,6 +40,6 @@ class NoSelectAllRuleWithGeneratedXmlTest {
 
         val findings = rule.lint(ktFile)
         assertEquals(1, findings.size)
-        assertEquals("Avoid SELECT * in com/example/Test.xml", findings[0].message)
+        assertEquals("Avoid SELECT * in com/mcdodik/Test.xml", findings[0].message)
     }
 }

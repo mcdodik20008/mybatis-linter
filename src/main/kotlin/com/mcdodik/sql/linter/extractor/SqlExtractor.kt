@@ -17,7 +17,7 @@ object SqlExtractor {
         val fileBaseName = ktFile.fileName.removeSuffix(".kt")
         val resourcePath = "$packagePath/$fileBaseName.xml"
 
-        println("Searching XML: $resourcePath")
+        Printer.pprintln("Searching XML: $resourcePath")
 
         val inputStream: InputStream = XmlFinderAggregator.findXmlByPackageName(resourcePath)
             ?: return emptyList()
@@ -43,7 +43,7 @@ object SqlExtractor {
 
             result
         } catch (e: ParseException) {
-            println("Failed to parse XML [$resourcePath]: ${e.message}")
+            Printer.pprintln("Failed to parse XML [$resourcePath]: ${e.message}")
             emptyList()
         }
     }

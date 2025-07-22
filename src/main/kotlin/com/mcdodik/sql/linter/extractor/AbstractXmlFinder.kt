@@ -22,19 +22,19 @@ abstract class AbstractXmlFinder {
         }
         return cache[resourcePath].also {
             if (it == null) {
-                println("$logPrefix Not found in cache: $resourcePath")
+                Printer.pprintln("$logPrefix Not found in cache: $resourcePath")
             } else {
-                println("$logPrefix Found in cache: $resourcePath")
+                Printer.pprintln("$logPrefix Found in cache: $resourcePath")
             }
         }
     }
 
     // Шаблонный метод для загрузки ресурсов
     private fun preloadResources() {
-        println("$logPrefix Preloading resources...")
+        Printer.pprintln("$logPrefix Preloading resources...")
         // Шаги предварительной загрузки: они могут быть разными в зависимости от реализации
         preloadFromSource()
-        println("$logPrefix XML preload complete. Total cached: ${cache.size}")
+        Printer.pprintln("$logPrefix XML preload complete. Total cached: ${cache.size}")
     }
 
     // Абстрактный метод, который должен быть реализован в конкретных классах
@@ -45,10 +45,10 @@ abstract class AbstractXmlFinder {
         val unifiedUri = uri.replace("\\", "/")
         val rootPath = allowedRoots.firstOrNull { root -> unifiedUri.contains(root) }
         if (rootPath == null) {
-            println()
+            Printer.pprintln("$logPrefix unifiedUri $unifiedUri не содержит allowRootPath $allowedRoots")
             return
         }
-        println("$logPrefix rootPath: $rootPath exists in unifiedUri: $unifiedUri")
+        Printer.pprintln("$logPrefix rootPath: $rootPath exists in unifiedUri: $unifiedUri")
 
         val idx = uri.indexOf(rootPath)
         if (idx == -1) {
@@ -59,12 +59,12 @@ abstract class AbstractXmlFinder {
         if (path !in cache) {
             try {
                 cache[path] = File(unifiedUri).inputStream()
-                println("$logPrefix Cached: $path")
-            } catch (e: Exception) {
-                println("$logPrefix Error for $path: ${e.message}")
+                Printer.pprintln("$logPrefix Cached: $path")
+            } catch (e: InternalError) {
+                Printer.pprintln("$logPrefix Error for $path: ${e.message}")
             }
         } else {
-            println("$logPrefix Duplicate skipped: $path")
+            Printer.pprintln("$logPrefix Duplicate skipped: $path")
         }
     }
 }
