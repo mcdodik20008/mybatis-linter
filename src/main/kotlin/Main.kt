@@ -1,10 +1,10 @@
 import com.mcdodik.sql.linter.extractor.XmlFinderAggregator
 
 fun main() {
-    Printer.logIsOn = true
+    Printer.logIsOn = false
     Printer.logLevel = Printer.LogLevel.DEBUG
     val resource = XmlFinderAggregator.findXmlByPackageName("com/mcdodik/Test.xml")
-    if (resource == null){
+    if (resource == null) {
         Printer.pprintln("Ничего не нашел")
         return
     }
@@ -15,11 +15,13 @@ object Printer {
     var logIsOn = false
     var logLevel = LogLevel.INFO
 
-    fun pprintln(value: Any?, /*logLevel: LogLevel = LogLevel.INFO*/){
-        println(value)
+    fun pprintln(value: Any? /*logLevel: LogLevel = LogLevel.INFO*/) {
+        if (logIsOn) {
+            println(value)
+        }
     }
 
-    enum class LogLevel(val weigth: Int){
+    enum class LogLevel(val weigth: Int) {
         INFO(0),
         DEBUG(1),
         ERROR(-1)
