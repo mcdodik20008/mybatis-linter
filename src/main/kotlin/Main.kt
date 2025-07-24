@@ -1,9 +1,9 @@
-import com.mcdodik.sql.linter.extractor.XmlFinderAggregator
+import com.mcdodik.sql.linter.extractor.FilesystemXmlFinder
 
 fun main() {
     Printer.logIsOn = false
     Printer.logLevel = Printer.LogLevel.DEBUG
-    val resource = XmlFinderAggregator.findXmlByPackageName("com/mcdodik/Test.xml")
+    val resource = FilesystemXmlFinder.findXmlByPackageName("com/mcdodik/Test.xml")
     if (resource == null) {
         Printer.pprintln("Ничего не нашел")
         return
@@ -24,6 +24,7 @@ object Printer {
     enum class LogLevel(val weigth: Int) {
         INFO(0),
         DEBUG(1),
-        ERROR(-1)
+        WARM(-1),
+        ERROR(-2)
     }
 }

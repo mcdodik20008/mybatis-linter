@@ -1,16 +1,19 @@
-package com.mcdodik.sql.linter.extractor
+package com.mcdodik.sql.linter.mybatis
 
+import Printer
+import com.mcdodik.sql.linter.extractor.FallbackParamContext
+import com.mcdodik.sql.linter.extractor.FilesystemXmlFinder
 import com.mcdodik.sql.linter.methods.SqlMethodInfo
 import com.mcdodik.sql.linter.methods.SqlParameter
 import io.github.detekt.psi.fileName
 import java.io.InputStream
-import java.text.ParseException
 import java.util.concurrent.ConcurrentHashMap
-import javax.xml.parsers.DocumentBuilderFactory
+import org.apache.ibatis.builder.xml.XMLMapperBuilder
+import org.apache.ibatis.mapping.MappedStatement
+import org.apache.ibatis.session.Configuration
 import org.jetbrains.kotlin.psi.KtFile
-import org.w3c.dom.NodeList
 
-object SqlExtractor {
+object MyBatisSqlLoader {
 
     private val parsedStatements: MutableMap<String, List<SqlMethodInfo>> = ConcurrentHashMap()
 
@@ -21,17 +24,18 @@ object SqlExtractor {
 
         Printer.pprintln("Searching XML: $resourcePath")
 
-        val inputStream: InputStream = XmlFinderAggregator.findXmlByPackageName(resourcePath)
+        val inputStream: InputStream = FilesystemXmlFinder.findXmlByPackageName(resourcePath)
             ?: return emptyList()
 
+        println("📦 FOUND XML: $resourcePath from ${inputStream::class.qualifiedName}")
         return parsedStatements.getOrPut(resourcePath) {
             parseMappedStatements(resourcePath, inputStream)
         }
     }
 
     private fun parseMappedStatements(resourcePath: String, inputStream: InputStream): List<SqlMethodInfo> {
-        val configuration = org.apache.ibatis.session.Configuration()
-        val mapperBuilder = org.apache.ibatis.builder.xml.XMLMapperBuilder(
+        val configuration = Configuration()
+        val mapperBuilder = XMLMapperBuilder(
             inputStream,
             configuration,
             resourcePath,
@@ -41,9 +45,20 @@ object SqlExtractor {
 
         return configuration.mappedStatements
             .asSequence()
-            .filterIsInstance<org.apache.ibatis.mapping.MappedStatement>()
+            .filterIsInstance<MappedStatement>()
+            .distinctBy { it.id }
             .map { ms ->
-                val boundSql = ms.getBoundSql(emptyMap<String, Any>())
+                val boundSql = try {
+                    ms.getBoundSql(FallbackParamContext())
+                } catch (ex: Exception) {
+                    Printer.pprintln("⚠️ FallbackParamContext failed: ${ex.message}")
+                    return@map SqlMethodInfo(
+                        id = ms.id,
+                        sql = "<unresolved>",
+                        parameters = emptyList(),
+                        isFallback = true
+                    )
+                }
                 SqlMethodInfo(
                     id = ms.id,
                     sql = boundSql.sql.trim(),
@@ -53,6 +68,6 @@ object SqlExtractor {
                 )
             }
             .toList()
-    }
 
+    }
 }
