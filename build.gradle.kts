@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.mcdodik"
-version = "1.0.4.1"
+version = "1.0.4.3"
 
 repositories {
     mavenCentral()
@@ -15,6 +15,9 @@ repositories {
 
 dependencies {
     implementation("org.springframework:spring-core:5.3.21")
+
+    implementation("org.mybatis:mybatis:3.5.9")
+    implementation("org.mybatis:mybatis-spring:2.0.7")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
