@@ -7,18 +7,15 @@ import java.util.concurrent.ConcurrentHashMap
 
 object FilesystemXmlFinder {
 
-    val logPrefix = "[FS]"
-    val cache: MutableMap<String, InputStream?> = ConcurrentHashMap()
-    var initialized = false
-    val allowedRoots = listOf(
-        "com/bftcom/",
-        "com/mcdodik"
-    )
+    private const val logPrefix = "[FS]"
+    private val cache: MutableMap<String, InputStream?> = ConcurrentHashMap()
+    private val allowedRoots = listOf("com/bftcom/", "com/mcdodik")
 
-    // Шаблонный метод для поиска XML файла
+    private var initialized = false
+
     fun findXmlByPackageName(resourcePath: String): InputStream? {
         if (!initialized) {
-            preloadResources()
+            preloadResources(File(System.getProperty("user.dir")))
             initialized = true
         }
         return cache[resourcePath].also {
@@ -30,20 +27,10 @@ object FilesystemXmlFinder {
         }
     }
 
-    // Шаблонный метод для загрузки ресурсов
-    private fun preloadResources() {
-        Printer.pprintln("$logPrefix Preloading resources...")
-        // Шаги предварительной загрузки: они могут быть разными в зависимости от реализации
-        preloadFromSource()
-        Printer.pprintln("$logPrefix XML preload complete. Total cached: ${cache.size}")
-    }
-
-    // Абстрактный метод, который должен быть реализован в конкретных классах
-    private fun preloadFromSource(){
-        Printer.pprintln("$logPrefix Preloading XML from FS")
-        val rootDir = File(System.getProperty("user.dir"))
+    private fun preloadResources(rootDir: File) {
+        Printer.pprintln("$logPrefix Preloading resources from: ${rootDir.absolutePath}")
         if (!rootDir.exists()) {
-            Printer.pprintln("$logPrefix ‼Resource directory not found: ${rootDir.absolutePath}")
+            Printer.pprintln("$logPrefix ‼ Directory not found: ${rootDir.absolutePath}")
             return
         }
 
@@ -51,35 +38,26 @@ object FilesystemXmlFinder {
             .filter { it.extension == "xml" }
             .forEach { file ->
                 val relativePath = file.relativeTo(rootDir).invariantSeparatorsPath
-                addResourceToCache(relativePath)  // Добавляем файл в кэш
+                val unifiedPath = relativePath.replace("\\", "/")
+                val root = allowedRoots.firstOrNull { unifiedPath.contains(it) } ?: return@forEach
+
+                val idx = unifiedPath.indexOf(root)
+                if (idx == -1) return@forEach
+
+                val cacheKey = unifiedPath.substring(idx)
+                if (cacheKey in cache) {
+                    Printer.pprintln("$logPrefix Duplicate skipped: $cacheKey")
+                    return@forEach
+                }
+
+                try {
+                    cache[cacheKey] = file.inputStream()
+                    Printer.pprintln("$logPrefix Cached: $cacheKey")
+                } catch (e: Exception) {
+                    Printer.pprintln("$logPrefix ❌ Error reading $cacheKey: ${e.message}")
+                }
             }
-    }
 
-    // Общая логика добавления ресурса в кэш
-    private fun addResourceToCache(uri: String) {
-        val unifiedUri = uri.replace("\\", "/")
-        val rootPath = allowedRoots.firstOrNull { root -> unifiedUri.contains(root) }
-        if (rootPath == null) {
-            Printer.pprintln("$logPrefix unifiedUri $unifiedUri не содержит allowRootPath $allowedRoots")
-            return
-        }
-        Printer.pprintln("$logPrefix rootPath: $rootPath exists in unifiedUri: $unifiedUri")
-
-        val idx = uri.indexOf(rootPath)
-        if (idx == -1) {
-            return
-        }
-
-        val path = unifiedUri.substring(idx)
-        if (path !in cache) {
-            try {
-                cache[path] = File(unifiedUri).inputStream()
-                Printer.pprintln("$logPrefix Cached: $path")
-            } catch (e: InternalError) {
-                Printer.pprintln("$logPrefix Error for $path: ${e.message}")
-            }
-        } else {
-            Printer.pprintln("$logPrefix Duplicate skipped: $path")
-        }
+        Printer.pprintln("$logPrefix XML preload complete. Total cached: ${cache.size}")
     }
 }

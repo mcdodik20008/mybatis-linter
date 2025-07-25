@@ -15,59 +15,66 @@ import org.jetbrains.kotlin.psi.KtFile
 
 object MyBatisSqlLoader {
 
-    private val parsedStatements: MutableMap<String, List<SqlMethodInfo>> = ConcurrentHashMap()
+    private val cache: MutableMap<String, List<SqlMethodInfo>> = ConcurrentHashMap()
 
-    fun extractSqlForKtFile(ktFile: KtFile): List<SqlMethodInfo> {
-        val packagePath = ktFile.packageFqNameByTree.asString().replace('.', '/')
-        val fileBaseName = ktFile.fileName.removeSuffix(".kt")
-        val resourcePath = "$packagePath/$fileBaseName.xml"
+    fun loadSql(ktFile: KtFile): Map<String, SqlMethodInfo> {
+        val resourcePath = resolveXmlPath(ktFile)
+        val inputStream = FilesystemXmlFinder.findXmlByPackageName(resourcePath)
+            ?: return emptyMap()
 
-        Printer.pprintln("Searching XML: $resourcePath")
+        Printer.pprintln("📦 FOUND XML: $resourcePath from ${inputStream::class.qualifiedName}")
 
-        val inputStream: InputStream = FilesystemXmlFinder.findXmlByPackageName(resourcePath)
-            ?: return emptyList()
-
-        println("📦 FOUND XML: $resourcePath from ${inputStream::class.qualifiedName}")
-        return parsedStatements.getOrPut(resourcePath) {
+        return cache.getOrPut(resourcePath) {
             parseMappedStatements(resourcePath, inputStream)
+        }.associateBy { it.id.substringAfterLast('.') }.also {
+            println("Map contains: ${it.keys}")
         }
+    }
+
+    private fun resolveXmlPath(ktFile: KtFile): String {
+        val packagePath = ktFile.packageFqNameByTree.asString().replace('.', '/')
+        val baseName = ktFile.fileName.removeSuffix(".kt")
+        return "$packagePath/$baseName.xml"
     }
 
     private fun parseMappedStatements(resourcePath: String, inputStream: InputStream): List<SqlMethodInfo> {
         val configuration = Configuration()
-        val mapperBuilder = XMLMapperBuilder(
+        val builder = XMLMapperBuilder(
             inputStream,
             configuration,
             resourcePath,
             configuration.sqlFragments
         )
-        mapperBuilder.parse()
+
+        builder.parse()
 
         return configuration.mappedStatements
             .asSequence()
             .filterIsInstance<MappedStatement>()
             .distinctBy { it.id }
-            .map { ms ->
-                val boundSql = try {
-                    ms.getBoundSql(FallbackParamContext())
-                } catch (ex: Exception) {
-                    Printer.pprintln("⚠️ FallbackParamContext failed: ${ex.message}")
-                    return@map SqlMethodInfo(
-                        id = ms.id,
-                        sql = "<unresolved>",
-                        parameters = emptyList(),
-                        isFallback = true
-                    )
-                }
-                SqlMethodInfo(
-                    id = ms.id,
-                    sql = boundSql.sql.trim(),
-                    parameters = boundSql.parameterMappings.map {
-                        SqlParameter(it.property, it.javaType)
-                    }
-                )
-            }
+            .map { ms -> parseStatementSafely(ms, resourcePath) }
             .toList()
+    }
 
+    private fun parseStatementSafely(ms: MappedStatement, resourcePath: String): SqlMethodInfo {
+        return try {
+            val boundSql = ms.getBoundSql(FallbackParamContext())
+            SqlMethodInfo(
+                id = ms.id,
+                sql = boundSql.sql.trim(),
+                parameters = boundSql.parameterMappings.map {
+                    SqlParameter(it.property, it.javaType)
+                },
+                isFallback = false
+            )
+        } catch (ex: Exception) {
+            Printer.pprintln("⚠️ Failed to resolve SQL for $resourcePath#${ms.id}: ${ex.message}")
+            SqlMethodInfo(
+                id = ms.id,
+                sql = "<unresolved>",
+                parameters = emptyList(),
+                isFallback = true
+            )
+        }
     }
 }
