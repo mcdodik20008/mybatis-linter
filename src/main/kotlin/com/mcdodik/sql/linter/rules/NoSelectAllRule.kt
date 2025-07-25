@@ -1,5 +1,6 @@
 package com.mcdodik.sql.linter.rules
 
+import com.mcdodik.sql.linter.printer.Printer
 import com.mcdodik.sql.linter.methods.SqlMethodInfo
 import com.mcdodik.sql.linter.mybatis.MyBatisSqlLoader
 import io.gitlab.arturbosch.detekt.api.CodeSmell
@@ -27,7 +28,7 @@ class NoSelectAllRule(config: Config) : Rule(config) {
         val sqlByMethodName = MyBatisSqlLoader.loadSql(file)
 
         if (sqlByMethodName.isEmpty()) {
-            println("⚠ No MyBatis SQL methods found. Skipping: ${file.name}")
+            Printer.pprintln("No MyBatis SQL methods found. Skipping: ${file.name}")
             return
         }
 
@@ -38,18 +39,19 @@ class NoSelectAllRule(config: Config) : Rule(config) {
             .forEach { function ->
                 val methodName = function.name ?: return@forEach
                 val sqlInfo = sqlByMethodName[methodName] ?: return@forEach
-                println("🔍 Matched method: $methodName → SQL: ${sqlInfo.sql.trim().take(80)}...")
-                checkSelectAll(file, function, sqlInfo)
+                checkSelectAll(function, sqlInfo)
             }
     }
 
-    private fun checkSelectAll(file: KtFile, function: KtNamedFunction, sqlInfo: SqlMethodInfo) {
+    private fun checkSelectAll(function: KtNamedFunction, sqlInfo: SqlMethodInfo) {
         val selectAllRegex = Regex("""(?i)\bselect\s+\*""")
 
         selectAllRegex.findAll(sqlInfo.sql).forEach { match ->
-            println("SELECT * detected in `${sqlInfo.id}`:\n${sqlInfo.sql.trim().take(100)}...")
+            Printer.pprintln("SELECT * detected in `${sqlInfo.id}`:" +
+                    "\n${sqlInfo.sql.trim().take(TAKE_SQL_FOR_PRINTER)}...")
 
-            val className = function.containingKtFile.packageFqName.asString() + "." +
+            val packageName = function.containingKtFile.packageFqName
+            val className = packageName.asString() + "." +
                     (function.parent as? KtClassOrObject)?.name.orEmpty()
             val methodName = function.name ?: "<unknown>"
 
@@ -61,5 +63,9 @@ class NoSelectAllRule(config: Config) : Rule(config) {
                 )
             )
         }
+    }
+
+    companion object {
+        private const val TAKE_SQL_FOR_PRINTER = 100
     }
 }

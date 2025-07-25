@@ -1,9 +1,11 @@
 package com.mcdodik.sql.linter.extractor
 
-import Printer
+import com.mcdodik.sql.linter.printer.Printer
 import java.io.File
 import java.io.InputStream
+import java.io.StreamCorruptedException
 import java.util.concurrent.ConcurrentHashMap
+import javax.xml.stream.XMLStreamException
 
 object FilesystemXmlFinder {
 
@@ -53,8 +55,8 @@ object FilesystemXmlFinder {
                 try {
                     cache[cacheKey] = file.inputStream()
                     Printer.pprintln("$logPrefix Cached: $cacheKey")
-                } catch (e: Exception) {
-                    Printer.pprintln("$logPrefix ❌ Error reading $cacheKey: ${e.message}")
+                } catch (e: XMLStreamException) {
+                    Printer.pprintln("$logPrefix Error reading $cacheKey: ${e.message}")
                 }
             }
 

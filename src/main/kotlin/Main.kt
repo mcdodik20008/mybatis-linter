@@ -1,3 +1,4 @@
+import com.mcdodik.sql.linter.printer.Printer
 import com.mcdodik.sql.linter.extractor.FilesystemXmlFinder
 
 fun main() {
@@ -11,20 +12,4 @@ fun main() {
 }
 
 
-object Printer {
-    var logIsOn = false
-    var logLevel = LogLevel.INFO
 
-    fun pprintln(value: Any? /*logLevel: LogLevel = LogLevel.INFO*/) {
-        if (logIsOn) {
-            println(value)
-        }
-    }
-
-    enum class LogLevel(val weigth: Int) {
-        INFO(0),
-        DEBUG(1),
-        WARM(-1),
-        ERROR(-2)
-    }
-}

@@ -1,12 +1,13 @@
 package com.mcdodik.sql.linter.mybatis
 
-import Printer
+import com.mcdodik.sql.linter.printer.Printer
 import com.mcdodik.sql.linter.extractor.FallbackParamContext
 import com.mcdodik.sql.linter.extractor.FilesystemXmlFinder
 import com.mcdodik.sql.linter.methods.SqlMethodInfo
 import com.mcdodik.sql.linter.methods.SqlParameter
 import io.github.detekt.psi.fileName
 import java.io.InputStream
+import java.sql.SQLException
 import java.util.concurrent.ConcurrentHashMap
 import org.apache.ibatis.builder.xml.XMLMapperBuilder
 import org.apache.ibatis.mapping.MappedStatement
@@ -22,13 +23,11 @@ object MyBatisSqlLoader {
         val inputStream = FilesystemXmlFinder.findXmlByPackageName(resourcePath)
             ?: return emptyMap()
 
-        Printer.pprintln("📦 FOUND XML: $resourcePath from ${inputStream::class.qualifiedName}")
+        Printer.pprintln("FOUND XML: $resourcePath from ${inputStream::class.qualifiedName}")
 
         return cache.getOrPut(resourcePath) {
             parseMappedStatements(resourcePath, inputStream)
-        }.associateBy { it.id.substringAfterLast('.') }.also {
-            println("Map contains: ${it.keys}")
-        }
+        }.associateBy { it.id.substringAfterLast('.') }
     }
 
     private fun resolveXmlPath(ktFile: KtFile): String {
@@ -67,8 +66,8 @@ object MyBatisSqlLoader {
                 },
                 isFallback = false
             )
-        } catch (ex: Exception) {
-            Printer.pprintln("⚠️ Failed to resolve SQL for $resourcePath#${ms.id}: ${ex.message}")
+        } catch (ex: SQLException) {
+            Printer.pprintln("Failed to resolve SQL for $resourcePath#${ms.id}: ${ex.message}")
             SqlMethodInfo(
                 id = ms.id,
                 sql = "<unresolved>",
