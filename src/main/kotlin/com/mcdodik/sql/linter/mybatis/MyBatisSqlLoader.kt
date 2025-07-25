@@ -3,6 +3,7 @@ package com.mcdodik.sql.linter.mybatis
 import com.mcdodik.sql.linter.extractor.FilesystemXmlFinder
 import com.mcdodik.sql.linter.methods.SqlMethodInfo
 import com.mcdodik.sql.linter.methods.SqlParameter
+import com.mcdodik.sql.linter.mybatis.dummyparams.FallbackParamContext
 import com.mcdodik.sql.linter.printer.Printer
 import io.github.detekt.psi.fileName
 import java.io.InputStream

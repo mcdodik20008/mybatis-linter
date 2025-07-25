@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     `java-library`
     id("maven-publish")
@@ -39,6 +41,10 @@ tasks.jar {
     manifest {
         attributes["Plugin-Class"] = "com.mcdodik.sql.linter.SqlRuleSetProvider"
     }
+}
+
+tasks.withType<Detekt>().configureEach {
+    exclude("**/dummyparams/**")
 }
 
 tasks.test {
