@@ -1,5 +1,5 @@
-import com.mcdodik.sql.linter.printer.Printer
 import com.mcdodik.sql.linter.extractor.FilesystemXmlFinder
+import com.mcdodik.sql.linter.printer.Printer
 
 fun main() {
     Printer.logIsOn = false

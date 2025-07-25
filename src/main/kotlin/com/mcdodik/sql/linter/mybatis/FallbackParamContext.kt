@@ -1,4 +1,4 @@
-package com.mcdodik.sql.linter.extractor
+package com.mcdodik.sql.linter.mybatis
 
 class FallbackParamContext(
     override val entries: Set<Map.Entry<String, Any?>> = emptySet<Map.Entry<String, Any?>>(),

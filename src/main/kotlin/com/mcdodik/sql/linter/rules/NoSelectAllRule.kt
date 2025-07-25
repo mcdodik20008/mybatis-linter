@@ -1,21 +1,17 @@
 package com.mcdodik.sql.linter.rules
 
-import com.mcdodik.sql.linter.printer.Printer
 import com.mcdodik.sql.linter.methods.SqlMethodInfo
-import com.mcdodik.sql.linter.mybatis.MyBatisSqlLoader
+import com.mcdodik.sql.linter.printer.Printer
 import io.gitlab.arturbosch.detekt.api.CodeSmell
 import io.gitlab.arturbosch.detekt.api.Config
 import io.gitlab.arturbosch.detekt.api.Debt
 import io.gitlab.arturbosch.detekt.api.Entity
 import io.gitlab.arturbosch.detekt.api.Issue
-import io.gitlab.arturbosch.detekt.api.Rule
 import io.gitlab.arturbosch.detekt.api.Severity
 import org.jetbrains.kotlin.psi.KtClassOrObject
-import org.jetbrains.kotlin.psi.KtDeclaration
-import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNamedFunction
 
-class NoSelectAllRule(config: Config) : Rule(config) {
+class NoSelectAllRule(config: Config) : SqlRule(config) {
 
     override val issue = Issue(
         id = "NoSelectAll",
@@ -24,31 +20,12 @@ class NoSelectAllRule(config: Config) : Rule(config) {
         debt = Debt.TWENTY_MINS
     )
 
-    override fun visitKtFile(file: KtFile) {
-        val sqlByMethodName = MyBatisSqlLoader.loadSql(file)
-
-        if (sqlByMethodName.isEmpty()) {
-            Printer.pprintln("No MyBatis SQL methods found. Skipping: ${file.name}")
-            return
-        }
-
-        file.declarations
-            .filterIsInstance<KtClassOrObject>() // интерфейсы и классы
-            .flatMap { it.body?.declarations.orEmpty() } // методы внутри тела
-            .filterIsInstance<KtNamedFunction>() // только функции
-            .forEach { function ->
-                val methodName = function.name ?: return@forEach
-                val sqlInfo = sqlByMethodName[methodName] ?: return@forEach
-                checkSelectAll(function, sqlInfo)
-            }
-    }
-
-    private fun checkSelectAll(function: KtNamedFunction, sqlInfo: SqlMethodInfo) {
+    override fun check(function: KtNamedFunction, sqlInfo: SqlMethodInfo) {
         val selectAllRegex = Regex("""(?i)\bselect\s+\*""")
 
         selectAllRegex.findAll(sqlInfo.sql).forEach { match ->
-            Printer.pprintln("SELECT * detected in `${sqlInfo.id}`:" +
-                    "\n${sqlInfo.sql.trim().take(TAKE_SQL_FOR_PRINTER)}...")
+            Printer.pprintln("SELECT * detected in `${sqlInfo.id}`:\n" +
+                    "${sqlInfo.sql.trim().take(TAKE_SQL_FOR_PRINTER)}...")
 
             val packageName = function.containingKtFile.packageFqName
             val className = packageName.asString() + "." +

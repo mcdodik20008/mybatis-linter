@@ -1,9 +1,9 @@
 package com.mcdodik.sql.linter.extractor
 
 import com.mcdodik.sql.linter.printer.Printer
+import com.mcdodik.sql.linter.printer.Printer.LogLevel
 import java.io.File
 import java.io.InputStream
-import java.io.StreamCorruptedException
 import java.util.concurrent.ConcurrentHashMap
 import javax.xml.stream.XMLStreamException
 
@@ -32,7 +32,7 @@ object FilesystemXmlFinder {
     private fun preloadResources(rootDir: File) {
         Printer.pprintln("$logPrefix Preloading resources from: ${rootDir.absolutePath}")
         if (!rootDir.exists()) {
-            Printer.pprintln("$logPrefix ‼ Directory not found: ${rootDir.absolutePath}")
+            Printer.pprintln("$logPrefix ‼ Directory not found: ${rootDir.absolutePath}", LogLevel.WARN)
             return
         }
 
@@ -48,7 +48,7 @@ object FilesystemXmlFinder {
 
                 val cacheKey = unifiedPath.substring(idx)
                 if (cacheKey in cache) {
-                    Printer.pprintln("$logPrefix Duplicate skipped: $cacheKey")
+                    Printer.pprintln("$logPrefix Duplicate skipped: $cacheKey", LogLevel.WARN)
                     return@forEach
                 }
 
@@ -56,7 +56,7 @@ object FilesystemXmlFinder {
                     cache[cacheKey] = file.inputStream()
                     Printer.pprintln("$logPrefix Cached: $cacheKey")
                 } catch (e: XMLStreamException) {
-                    Printer.pprintln("$logPrefix Error reading $cacheKey: ${e.message}")
+                    Printer.pprintln("$logPrefix Error reading $cacheKey: ${e.message}", LogLevel.ERROR)
                 }
             }
 

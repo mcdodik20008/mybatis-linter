@@ -1,10 +1,9 @@
 package com.mcdodik.sql.linter.mybatis
 
-import com.mcdodik.sql.linter.printer.Printer
-import com.mcdodik.sql.linter.extractor.FallbackParamContext
 import com.mcdodik.sql.linter.extractor.FilesystemXmlFinder
 import com.mcdodik.sql.linter.methods.SqlMethodInfo
 import com.mcdodik.sql.linter.methods.SqlParameter
+import com.mcdodik.sql.linter.printer.Printer
 import io.github.detekt.psi.fileName
 import java.io.InputStream
 import java.sql.SQLException
@@ -33,7 +32,9 @@ object MyBatisSqlLoader {
     private fun resolveXmlPath(ktFile: KtFile): String {
         val packagePath = ktFile.packageFqNameByTree.asString().replace('.', '/')
         val baseName = ktFile.fileName.removeSuffix(".kt")
-        return "$packagePath/$baseName.xml"
+        return "$packagePath/$baseName.xml".also {
+            Printer.pprintln("Resolve xml path: $it")
+        }
     }
 
     private fun parseMappedStatements(resourcePath: String, inputStream: InputStream): List<SqlMethodInfo> {
@@ -44,7 +45,6 @@ object MyBatisSqlLoader {
             resourcePath,
             configuration.sqlFragments
         )
-
         builder.parse()
 
         return configuration.mappedStatements
@@ -67,7 +67,7 @@ object MyBatisSqlLoader {
                 isFallback = false
             )
         } catch (ex: SQLException) {
-            Printer.pprintln("Failed to resolve SQL for $resourcePath#${ms.id}: ${ex.message}")
+            Printer.pprintln("Failed to resolve SQL for $resourcePath#${ms.id}: ${ex.message}", Printer.LogLevel.ERROR)
             SqlMethodInfo(
                 id = ms.id,
                 sql = "<unresolved>",

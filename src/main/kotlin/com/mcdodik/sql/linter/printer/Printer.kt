@@ -1,7 +1,5 @@
 package com.mcdodik.sql.linter.printer
 
-import kotlin.math.log
-
 object Printer {
     var logIsOn = false
     var logLevel = LogLevel.INFO
@@ -15,7 +13,7 @@ object Printer {
     enum class LogLevel(val weigth: Int) {
         INFO(0),
         DEBUG(1),
-        WARM(-1),
+        WARN(-1),
         ERROR(-1)
     }
 }
