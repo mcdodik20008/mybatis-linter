@@ -37,7 +37,7 @@ object FilesystemXmlFinder {
         }
 
         rootDir.walkTopDown()
-            .filter { it.extension == "xml" }
+            .filter { it.extension == "xml" && isSrcFile(it) }
             .forEach { file ->
                 val relativePath = file.relativeTo(rootDir).invariantSeparatorsPath
                 val unifiedPath = relativePath.replace("\\", "/")
@@ -53,6 +53,10 @@ object FilesystemXmlFinder {
                 }
 
                 try {
+                    if (!file.exists()){
+                        println("Это пизда братья!")
+                    }
+                    println("Is: ${file.inputStream()}")
                     cache[cacheKey] = file.inputStream()
                     Printer.pprintln("$logPrefix Cached: $cacheKey")
                 } catch (e: XMLStreamException) {
@@ -60,6 +64,32 @@ object FilesystemXmlFinder {
                 }
             }
 
-        Printer.pprintln("$logPrefix XML preload complete. Total cached: ${cache.size}")
+        Printer.pprintln("$logPrefix XML preload complete. Total cached: ${cache}")
     }
+
+    fun isSrcFile(file: File): Boolean {
+        val path = file.absolutePath.replace(File.separatorChar, '/')
+
+        val excludedPaths = listOf(
+            "/build/",
+            "/out/",
+            "/.idea/",
+            "/.gradle/",
+            "/generated/",
+            "/tmp/",
+            "/test-classes/"
+        )
+
+        val includedPaths = listOf(
+            "/src/main/",
+            "/src/shared/", // если у тебя есть общие модули
+            "/resources/",  // для mapper.xml
+        )
+
+        val isExcluded = excludedPaths.any { it in path }
+        val isIncluded = includedPaths.any { it in path }
+
+        return !isExcluded && isIncluded
+    }
+
 }

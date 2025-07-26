@@ -3,7 +3,9 @@ package com.mcdodik.sql.linter.mybatis
 import com.mcdodik.sql.linter.extractor.FilesystemXmlFinder
 import com.mcdodik.sql.linter.methods.SqlMethodInfo
 import com.mcdodik.sql.linter.methods.SqlParameter
+import com.mcdodik.sql.linter.methods.SqlVariant
 import com.mcdodik.sql.linter.mybatis.dummyparams.FallbackParamContext
+import com.mcdodik.sql.linter.mybatis.vatiants.SqlVariantGenerator
 import com.mcdodik.sql.linter.printer.Printer
 import io.github.detekt.psi.fileName
 import java.io.InputStream
@@ -20,7 +22,7 @@ object MyBatisSqlLoader {
 
     fun loadSql(ktFile: KtFile): Map<String, SqlMethodInfo> {
         val resourcePath = resolveXmlPath(ktFile)
-        val inputStream = FilesystemXmlFinder.findXmlByPackageName(resourcePath)
+        val inputStream = FilesystemXmlFinder.findXmlByPackageName(resourcePath).also { println(it) }
             ?: return emptyMap()
 
         Printer.pprintln("FOUND XML: $resourcePath from ${inputStream::class.qualifiedName}")
@@ -58,20 +60,22 @@ object MyBatisSqlLoader {
 
     private fun parseStatementSafely(ms: MappedStatement, resourcePath: String): SqlMethodInfo {
         return try {
-            val boundSql = ms.getBoundSql(FallbackParamContext())
+            val variants: List<SqlVariant> =
+                SqlVariantGenerator.generateFromMappedStatement(ms, resourcePath)
+
             SqlMethodInfo(
                 id = ms.id,
-                sql = boundSql.sql.trim(),
-                parameters = boundSql.parameterMappings.map {
-                    SqlParameter(it.property, it.javaType)
-                },
+                variants = variants,
+                parameters = ms.getBoundSql(FallbackParamContext())
+                    .parameterMappings
+                    .map { SqlParameter(it.property, it.javaType) },
                 isFallback = false
             )
         } catch (ex: SQLException) {
             Printer.pprintln("Failed to resolve SQL for $resourcePath#${ms.id}: ${ex.message}", Printer.LogLevel.ERROR)
             SqlMethodInfo(
                 id = ms.id,
-                sql = "<unresolved>",
+                variants = listOf(SqlVariant("<unresolved>", emptyMap())),
                 parameters = emptyList(),
                 isFallback = true
             )

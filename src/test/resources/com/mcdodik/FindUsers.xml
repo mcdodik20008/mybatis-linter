@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.FakeMapper">
+
+    <select id="findUsers" resultType="map">
+        SELECT * FROM users
+        <where>
+            <if test="login == null">
+                AND login IS NULL
+            </if>
+            <if test="date.isAfter(now)">
+                AND created_at > #{date}
+            </if>
+            <if test="trashBasket?.isEmpty() == true">
+                AND trash_flag = false
+            </if>
+        </where>
+    </select>
+
+    <select id="delUsers" resultType="map">
+        DELETE FROM users WHERE 1 = 1
+        <where>
+            <if test="login == null">
+                AND login IS NULL
+            </if>
+            <if test="date.isAfter(now())">
+                AND created_at > #{date}
+            </if>
+            <if test="trashBasket?.isEmpty() == true">
+                AND trash_flag = false
+            </if>
+        </where>
+    </select>
+
+</mapper>

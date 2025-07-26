@@ -21,28 +21,40 @@ class NoSelectAllRule(config: Config) : SqlRule(config) {
     )
 
     override fun check(function: KtNamedFunction, sqlInfo: SqlMethodInfo) {
-        val selectAllRegex = Regex("""(?i)\bselect\s+\*""")
+        val className = resolveClassName(function)
+        val methodName = function.name ?: "<unknown>"
 
-        selectAllRegex.findAll(sqlInfo.sql).forEach { match ->
-            Printer.pprintln("SELECT * detected in `${sqlInfo.id}`:\n" +
-                    "${sqlInfo.sql.trim().take(TAKE_SQL_FOR_PRINTER)}...")
+        for (variant in sqlInfo.variants) {
+            val match = SELECT_ALL_REGEX.find(variant.sql) ?: continue
 
-            val packageName = function.containingKtFile.packageFqName
-            val className = packageName.asString() + "." +
-                    (function.parent as? KtClassOrObject)?.name.orEmpty()
-            val methodName = function.name ?: "<unknown>"
+            Printer.pprintln(
+                buildString {
+                    appendLine("SELECT * detected in `${sqlInfo.id}`:")
+                    appendLine("SQL: ${variant.sql.trim().take(TAKE_SQL_FOR_PRINTER)}...")
+                    if (variant.conditions.isNotEmpty()) {
+                        appendLine("Conditions: ${variant.conditions.entries.joinToString()}")
+                    }
+                }
+            )
 
             report(
                 CodeSmell(
                     issue = issue,
-                    entity = Entity.from(function, match.range.first),
-                    message = "Avoid SELECT * in `$className.$methodName` (SQL id: `${sqlInfo.id}`)"
+                    entity = Entity.atName(function), // можно позже привязать к SQL range
+                    message = "Avoid SELECT * in `$className.$methodName` under conditions: ${variant.conditions}"
                 )
             )
         }
     }
 
+    private fun resolveClassName(function: KtNamedFunction): String {
+        val packageName = function.containingKtFile.packageFqName.asString()
+        val className = (function.parent as? KtClassOrObject)?.name.orEmpty()
+        return "$packageName.$className"
+    }
+
     companion object {
+        private val SELECT_ALL_REGEX = Regex("""(?i)\bselect\s+\*""")
         private const val TAKE_SQL_FOR_PRINTER = 100
     }
 }
