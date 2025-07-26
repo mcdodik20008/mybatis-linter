@@ -35,7 +35,11 @@ class SqlVariantFlattener {
                     all += buildVariants(SqlNode.Group(branch.children), prefix, conditions + (branch.test to true))
                 }
                 if (node.otherwise != null) {
-                    all += buildVariants(SqlNode.Group(node.otherwise.children), prefix, conditions + ("<otherwise>" to true))
+                    all += buildVariants(
+                        SqlNode.Group(node.otherwise.children),
+                        prefix,
+                        conditions + ("<otherwise>" to true)
+                    )
                 }
                 all
             }

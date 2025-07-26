@@ -1,6 +1,7 @@
 package com.mcdodik.sql.linter.variants
 
 import com.mcdodik.sql.linter.mybatis.vatiants.SqlVariantGenerator
+import java.io.File
 import org.apache.ibatis.builder.xml.XMLMapperBuilder
 import org.apache.ibatis.mapping.MappedStatement
 import org.apache.ibatis.session.Configuration
@@ -26,7 +27,7 @@ class SqlVariantGeneratorTest {
             .first { it.id.endsWith("delUsers") } as MappedStatement
 
         // when
-        val variants = SqlVariantGenerator.generateFromMappedStatement(ms, resourceUrl.path)
+        val variants = SqlVariantGenerator.generateFromMappedStatement(ms, File(resourceUrl.path))
 
         // then
         assertEquals(8, variants.size)
@@ -50,6 +51,28 @@ class SqlVariantGeneratorTest {
             println("→ Conditions: ${it.conditions}")
             println("   SQL: ${it.sql.trim()}")
         }
+    }
+
+    @Test
+    fun test2() {
+        // given
+        val resourcePath = "/com/mcdodik/FindUsers.xml"
+        val resourceUrl = javaClass.getResource(resourcePath)
+        requireNotNull(resourceUrl) { "Could not find test resource: $resourcePath" }
+
+        val inputStream = resourceUrl.openStream()
+        val configuration = Configuration()
+        val builder = XMLMapperBuilder(inputStream, configuration, resourceUrl.path, configuration.sqlFragments)
+        builder.parse()
+
+        val ms = configuration.mappedStatements
+            .first { it.id.endsWith("findEsto") } as MappedStatement
+
+        // when
+        val variants = SqlVariantGenerator.generateFromMappedStatement(ms, File(resourceUrl.path))
+
+        // then
+        assertEquals(128, variants.size)
     }
 }
 

@@ -2,36 +2,29 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.FakeMapper">
+<mapper namespace="com.mcdodik.FindUsers">
 
-    <select id="findUsers" resultType="map">
-        SELECT * FROM users
-        <where>
-            <if test="login == null">
-                AND login IS NULL
-            </if>
-            <if test="date.isAfter(now)">
-                AND created_at > #{date}
-            </if>
-            <if test="trashBasket?.isEmpty() == true">
-                AND trash_flag = false
-            </if>
-        </where>
+    <resultMap id="esto" type="com.mcdodik.Esto">
+        <result property="unsiCode" column="unsi_code"/>
+        <result property="siaCode" column="sia_code"/>
+        <result property="region" column="region"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <select id="findEsto" resultMap="esto" parameterType="java.lang.String" flushCache="true">
+        select
+        unsi_code,
+        sia_code,
+        region,
+        "name"
+        from rrbpm_ups.esto
+        where sia_code is not null
+        <if test="unsiCode != null">and unsi_code like '%${unsiCode}%'</if>
+        <if test="siaCode != null">and sia_code = #{siaCode}</if>
+        <if test="region != null">and region = #{region}</if>
+        <if test="name != null">and "name" = #{name}</if>
+        <if test="sort_field != null">order by ${sortField}</if>
+        <if test="sort_direction != null">order by ${sortDirection}</if>
+        <if test="limit != null">limit ${limit}</if>;
     </select>
-
-    <select id="delUsers" resultType="map">
-        DELETE FROM users WHERE 1 = 1
-        <where>
-            <if test="login == null">
-                AND login IS NULL
-            </if>
-            <if test="date.isAfter(now())">
-                AND created_at > #{date}
-            </if>
-            <if test="trashBasket?.isEmpty() == true">
-                AND trash_flag = false
-            </if>
-        </where>
-    </select>
-
 </mapper>

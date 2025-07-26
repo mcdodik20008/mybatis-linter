@@ -3,19 +3,18 @@ package com.mcdodik.sql.linter.extractor
 import com.mcdodik.sql.linter.printer.Printer
 import com.mcdodik.sql.linter.printer.Printer.LogLevel
 import java.io.File
-import java.io.InputStream
 import java.util.concurrent.ConcurrentHashMap
 import javax.xml.stream.XMLStreamException
 
 object FilesystemXmlFinder {
 
     private const val logPrefix = "[FS]"
-    private val cache: MutableMap<String, InputStream?> = ConcurrentHashMap()
+    private val cache: MutableMap<String, File?> = ConcurrentHashMap()
     private val allowedRoots = listOf("com/bftcom/", "com/mcdodik")
 
     private var initialized = false
 
-    fun findXmlByPackageName(resourcePath: String): InputStream? {
+    fun findXmlByPackageName(resourcePath: String): File? {
         if (!initialized) {
             preloadResources(File(System.getProperty("user.dir")))
             initialized = true
@@ -53,11 +52,7 @@ object FilesystemXmlFinder {
                 }
 
                 try {
-                    if (!file.exists()){
-                        println("Это пизда братья!")
-                    }
-                    println("Is: ${file.inputStream()}")
-                    cache[cacheKey] = file.inputStream()
+                    cache[cacheKey] = file
                     Printer.pprintln("$logPrefix Cached: $cacheKey")
                 } catch (e: XMLStreamException) {
                     Printer.pprintln("$logPrefix Error reading $cacheKey: ${e.message}", LogLevel.ERROR)

@@ -4,6 +4,7 @@ import com.mcdodik.sql.linter.methods.SqlVariant
 import com.mcdodik.sql.linter.printer.Printer
 import java.io.File
 import java.io.InputStream
+import javax.management.modelmbean.XMLParseException
 import javax.xml.parsers.DocumentBuilderFactory
 import org.apache.ibatis.mapping.MappedStatement
 import org.w3c.dom.Document
@@ -14,33 +15,41 @@ object SqlVariantGenerator {
 
     fun generateFromMappedStatement(
         ms: MappedStatement,
-        resourcePath: String
+        file: File
     ): List<SqlVariant> {
         val shortId = ms.id.substringAfterLast('.')
-        val xmlDoc = parseXml(resourcePath, File(ms.resource).inputStream())
-            ?: return listOf(SqlVariant("<unresolved>", emptyMap()))
-
+        val xmlDoc = parseXml(file)
         val rootNode = findSqlNodeById(xmlDoc, shortId)
-            ?: return listOf(SqlVariant("<not found: $shortId>", emptyMap()))
+
+        if (rootNode == null) {
+            return listOf(SqlVariant("<not found: $shortId>", emptyMap()))
+        }
 
         val logicTree = SqlLogicParser().parse(rootNode)
         return SqlVariantFlattener().flatten(logicTree)
     }
 
-    private fun parseXml(path: String, stream: InputStream?): Document? {
+    private fun parseXml(file: File?): Document? {
         return try {
             val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-            builder.parse(stream)
-        } catch (ex: Exception) {
-            Printer.pprintln("XML parse error: $path — ${ex.message}", Printer.LogLevel.ERROR)
+            builder.parse(file?.inputStream())
+        } catch (ex: XMLParseException) {
+            Printer.pprintln(
+                "XML parse error: ${file?.absolutePath ?: "filePath is null"} — ${ex.message}",
+                Printer.LogLevel.ERROR
+            )
             null
         }
     }
 
-    private fun findSqlNodeById(doc: Document, id: String): Element? {
-        val tags = listOf("select", "insert", "update", "delete")
+    private fun findSqlNodeById(doc: Document?, id: String): Element? {
+        val tags = if (doc != null) {
+            listOf("select", "insert", "update", "delete")
+        } else {
+            emptyList()
+        }
         for (tag in tags) {
-            val nodes = doc.getElementsByTagName(tag)
+            val nodes = doc!!.getElementsByTagName(tag)
             for (i in 0 until nodes.length) {
                 val el = nodes.item(i) as? Element ?: continue
                 if (el.getAttribute("id") == id) {

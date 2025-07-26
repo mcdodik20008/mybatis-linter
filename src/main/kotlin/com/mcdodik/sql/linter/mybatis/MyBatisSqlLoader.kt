@@ -8,7 +8,7 @@ import com.mcdodik.sql.linter.mybatis.dummyparams.FallbackParamContext
 import com.mcdodik.sql.linter.mybatis.vatiants.SqlVariantGenerator
 import com.mcdodik.sql.linter.printer.Printer
 import io.github.detekt.psi.fileName
-import java.io.InputStream
+import java.io.File
 import java.sql.SQLException
 import java.util.concurrent.ConcurrentHashMap
 import org.apache.ibatis.builder.xml.XMLMapperBuilder
@@ -40,10 +40,10 @@ object MyBatisSqlLoader {
         }
     }
 
-    private fun parseMappedStatements(resourcePath: String, inputStream: InputStream): List<SqlMethodInfo> {
+    private fun parseMappedStatements(resourcePath: String, file: File): List<SqlMethodInfo> {
         val configuration = Configuration()
         val builder = XMLMapperBuilder(
-            inputStream,
+            file.inputStream(),
             configuration,
             resourcePath,
             configuration.sqlFragments
@@ -54,14 +54,14 @@ object MyBatisSqlLoader {
             .asSequence()
             .filterIsInstance<MappedStatement>()
             .distinctBy { it.id }
-            .map { ms -> parseStatementSafely(ms, resourcePath) }
+            .map { ms -> parseStatementSafely(ms, resourcePath, file) }
             .toList()
     }
 
-    private fun parseStatementSafely(ms: MappedStatement, resourcePath: String): SqlMethodInfo {
+    private fun parseStatementSafely(ms: MappedStatement, resourcePath: String, file: File): SqlMethodInfo {
         return try {
             val variants: List<SqlVariant> =
-                SqlVariantGenerator.generateFromMappedStatement(ms, resourcePath)
+                SqlVariantGenerator.generateFromMappedStatement(ms, file)
 
             SqlMethodInfo(
                 id = ms.id,

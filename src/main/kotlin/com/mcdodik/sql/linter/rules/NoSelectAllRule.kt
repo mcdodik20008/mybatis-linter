@@ -25,7 +25,7 @@ class NoSelectAllRule(config: Config) : SqlRule(config) {
         val methodName = function.name ?: "<unknown>"
 
         for (variant in sqlInfo.variants) {
-            val match = SELECT_ALL_REGEX.find(variant.sql) ?: continue
+            SELECT_ALL_REGEX.find(variant.sql) ?: continue
 
             Printer.pprintln(
                 buildString {
