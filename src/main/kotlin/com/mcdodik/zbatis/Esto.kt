@@ -1,4 +1,4 @@
-package com.mcdodik
+package com.mcdodik.zbatis
 
 data class Esto(
     // УНСИ код (например 40.054)

@@ -4,21 +4,6 @@
 
 <mapper namespace="com.mcdodik.zbatis.FindUsers">
 
-    <select id="findUsers" resultType="map">
-        SELECT * FROM users
-        <where>
-            <if test="login == null">
-                AND login IS NULL
-            </if>
-            <if test="date.isAfter(now)">
-                AND created_at > #{date}
-            </if>
-            <if test="trashBasket?.isEmpty() == true">
-                AND trash_flag = false
-            </if>
-        </where>
-    </select>
-
     <resultMap id="esto" type="com.mcdodik.zbatis.Esto">
         <result property="unsiCode" column="unsi_code"/>
         <result property="siaCode" column="sia_code"/>
@@ -34,7 +19,7 @@
         <collection
                 property="data"
                 javaType="java.util.ArrayList"
-                ofType="com.mcdodik.zbatis.SiaUser"
+                ofType="com.bftcom.rr.ups.model.db.SiaUser"
                 resultMap="siaUser"/>
     </resultMap>
 

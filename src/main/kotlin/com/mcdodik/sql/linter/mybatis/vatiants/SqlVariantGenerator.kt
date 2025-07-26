@@ -3,7 +3,6 @@ package com.mcdodik.sql.linter.mybatis.vatiants
 import com.mcdodik.sql.linter.methods.SqlVariant
 import com.mcdodik.sql.linter.printer.Printer
 import java.io.File
-import java.io.InputStream
 import javax.management.modelmbean.XMLParseException
 import javax.xml.parsers.DocumentBuilderFactory
 import org.apache.ibatis.mapping.MappedStatement
@@ -25,8 +24,8 @@ object SqlVariantGenerator {
             return listOf(SqlVariant("<not found: $shortId>", emptyMap()))
         }
 
-        val logicTree = SqlLogicParser().parse(rootNode)
-        return SqlVariantFlattener().flatten(logicTree)
+        val logicTree = SqlLogicParser.parse(rootNode)
+        return SqlVariantFlattener.flatten(logicTree)
     }
 
     private fun parseXml(file: File?): Document? {

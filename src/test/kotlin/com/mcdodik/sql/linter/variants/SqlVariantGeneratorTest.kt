@@ -14,7 +14,7 @@ class SqlVariantGeneratorTest {
     @Test
     fun test() {
         // given
-        val resourcePath = "/com/mcdodik/FindUsers.xml"
+        val resourcePath = "/com/mcdodik/zbatis/FindUsers.xml"
         val resourceUrl = javaClass.getResource(resourcePath)
         requireNotNull(resourceUrl) { "Could not find test resource: $resourcePath" }
 
@@ -56,7 +56,7 @@ class SqlVariantGeneratorTest {
     @Test
     fun test2() {
         // given
-        val resourcePath = "/com/mcdodik/FindUsers.xml"
+        val resourcePath = "/com/mcdodik/zbatis/FindUsers.xml"
         val resourceUrl = javaClass.getResource(resourcePath)
         requireNotNull(resourceUrl) { "Could not find test resource: $resourcePath" }
 
@@ -66,7 +66,7 @@ class SqlVariantGeneratorTest {
         builder.parse()
 
         val ms = configuration.mappedStatements
-            .first { it.id.endsWith("findEsto") } as MappedStatement
+            .first { it.id.endsWith("findSiaUser") } as MappedStatement
 
         // when
         val variants = SqlVariantGenerator.generateFromMappedStatement(ms, File(resourceUrl.path))

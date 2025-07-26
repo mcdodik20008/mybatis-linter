@@ -22,13 +22,13 @@ object MyBatisSqlLoader {
 
     fun loadSql(ktFile: KtFile): Map<String, SqlMethodInfo> {
         val resourcePath = resolveXmlPath(ktFile)
-        val inputStream = FilesystemXmlFinder.findXmlByPackageName(resourcePath).also { println(it) }
+        val mapperXmlFile = FilesystemXmlFinder.findXmlByPackageName(resourcePath)
             ?: return emptyMap()
 
-        Printer.pprintln("FOUND XML: $resourcePath from ${inputStream::class.qualifiedName}")
+        Printer.pprintln("FOUND XML: $resourcePath}")
 
         return cache.getOrPut(resourcePath) {
-            parseMappedStatements(resourcePath, inputStream)
+            parseMappedStatements(resourcePath, mapperXmlFile)
         }.associateBy { it.id.substringAfterLast('.') }
     }
 

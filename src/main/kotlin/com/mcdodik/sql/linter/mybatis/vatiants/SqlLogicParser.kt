@@ -4,11 +4,11 @@ import org.w3c.dom.Element
 import org.w3c.dom.Node
 
 
-class SqlLogicParser {
+object SqlLogicParser {
     fun parse(node: Node): SqlNode = when (node.nodeType) {
         Node.TEXT_NODE -> {
             val text = node.textContent.trim()
-            if (text.isBlank()) SqlNode.Static("") else SqlNode.Static(text)
+            if (text.isBlank()) SqlNode.Static() else SqlNode.Static(text)
         }
 
         Node.ELEMENT_NODE -> {
