@@ -1,4 +1,5 @@
 import io.gitlab.arturbosch.detekt.Detekt
+import kotlin.properties.ReadOnlyProperty
 
 plugins {
     `java-library`
@@ -6,13 +7,23 @@ plugins {
     kotlin("jvm") version "1.7.10"
     kotlin("plugin.spring") version "1.7.10"
     id("io.gitlab.arturbosch.detekt") version "1.22.0"
+    id("net.researchgate.release") version "3.0.2"
 }
 
 group = "com.mcdodik"
-version = "1.0.4.3"
 
 repositories {
-    mavenCentral()
+    if (System.getenv("nexusUrl") != null) {
+        repositories {
+            mavenLocal()
+            maven(url = uri(System.getenv("nexusUrl")))
+        }
+    } else {
+        repositories {
+            mavenLocal()
+            maven(url = "https://nexus.supercode.ru/repository/rosreestr-public/")
+        }
+    }
 }
 
 dependencies {
@@ -51,10 +62,51 @@ tasks.test {
     useJUnitPlatform()
 }
 
+/**
+ * Project configuration by properties and environment
+ */
+fun envConfig() = ReadOnlyProperty<Any, String?> { _, property ->
+    if (ext.has(property.name)) {
+        ext[property.name] as? String
+    } else {
+        System.getenv(property.name)
+    }
+}
+
+val repositoryUser by envConfig()
+val repositoryPassword by envConfig()
+val repositoryUrl by envConfig()
+
 publishing {
     publications {
+        //Internal repository setup
+        repositories {
+            maven {
+                url = uri("$repositoryUrl")
+                if (url.scheme.startsWith("http", true)) {
+                    credentials {
+                        username = "$repositoryUser"
+                        password = "$repositoryPassword"
+                    }
+                }
+            }
+        }
+
         create<MavenPublication>("mavenJava") {
             from(components["java"])
+        }
+    }
+}
+
+release {
+    if (System.getenv("pushReleaseVersionBranch") != null) {
+        git {
+            requireBranch.set("develop")
+            pushReleaseVersionBranch.set(System.getenv("pushReleaseVersionBranch"))
+        }
+    } else {
+        git {
+            requireBranch.set("develop")
         }
     }
 }
