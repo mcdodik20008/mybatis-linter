@@ -1,5 +1,5 @@
-import com.mcdodik.sql.linter.mybatis.MyBatisSqlLoader
-import com.mcdodik.sql.linter.printer.Printer
+import com.bftcom.rr.mybatis.linter.mybatis.MyBatisSqlLoader
+import com.bftcom.rr.mybatis.linter.printer.Printer
 import java.io.File
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
