@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mcdodik.zbatis.FindUsers">
+<mapper namespace="com.bftcom.rr.mybatis.linter.tbatis.FindUsers">
 
     <select id="findUsers" resultType="map">
         SELECT * FROM users
@@ -19,14 +19,14 @@
         </where>
     </select>
 
-    <resultMap id="esto" type="com.mcdodik.zbatis.Esto">
+    <resultMap id="esto" type="com.bftcom.rr.mybatis.linter.tbatis.Esto">
         <result property="unsiCode" column="unsi_code"/>
         <result property="siaCode" column="sia_code"/>
         <result property="region" column="region"/>
         <result property="name" column="name"/>
     </resultMap>
 
-    <resultMap id="siaUserPageable" type="com.mcdodik.zbatis.PageData">
+    <resultMap id="siaUserPageable" type="com.bftcom.rr.mybatis.linter.tbatis.PageData">
         <id property="key" column="query_key"/>
         <result property="totalCount" column="total_count"/>
         <result property="limit" column="query_limit"/>
@@ -34,11 +34,11 @@
         <collection
                 property="data"
                 javaType="java.util.ArrayList"
-                ofType="com.mcdodik.zbatis.SiaUser"
+                ofType="com.bftcom.rr.mybatis.linter.tbatis.SiaUser"
                 resultMap="siaUser"/>
     </resultMap>
 
-    <resultMap id="siaUser" type="com.mcdodik.zbatis.SiaUser">
+    <resultMap id="siaUser" type="com.bftcom.rr.mybatis.linter.tbatis.SiaUser">
         <id property="login" column="login"/>
         <result property="unsiEstoCode" column="unsi_esto_code"/>
         <result property="siaEstoCode" column="sia_esto_code"/>

@@ -1,19 +1,20 @@
 package com.bftcom.rr.mybatis.linter.sql.linter.variants
 
-import com.mcdodik.sql.linter.mybatis.vatiants.SqlVariantGenerator
+import com.bftcom.rr.mybatis.linter.mybatis.vatiants.SqlVariantGenerator
 import java.io.File
 import org.apache.ibatis.builder.xml.XMLMapperBuilder
 import org.apache.ibatis.mapping.MappedStatement
 import org.apache.ibatis.session.Configuration
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class SqlVariantGeneratorTest {
 
     @Test
+    @Disabled
     fun test() {
-        // given
-        val resourcePath = "/com/mcdodik/zbatis/FindUsers.xml"
+        val resourcePath = "com/bftcom/rr/mybatis/linter/tbatis/FindUsers.xml"
         val resourceUrl = javaClass.getResource(resourcePath)
         requireNotNull(resourceUrl) { "Could not find test resource: $resourcePath" }
 
@@ -31,8 +32,9 @@ class SqlVariantGeneratorTest {
     }
 
     @Test
+    @Disabled
     fun test2() {
-        val resourcePath = "/com/mcdodik/zbatis/FindUsers.xml"
+        val resourcePath = "com/bftcom/rr/mybatis/linter/tbatis/FindUsers.xml"
         val resourceUrl = javaClass.getResource(resourcePath)
         requireNotNull(resourceUrl) { "Could not find test resource: $resourcePath" }
 

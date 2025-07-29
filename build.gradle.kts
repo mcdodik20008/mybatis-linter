@@ -6,8 +6,8 @@ plugins {
     id("maven-publish")
     kotlin("jvm") version "1.7.10"
     kotlin("plugin.spring") version "1.7.10"
-    id("io.gitlab.arturbosch.detekt") version "1.22.0"
-    id("net.researchgate.release") version "3.0.2"
+    id(Plugins.detekt_plugin) version Vers.detekt_plugin
+    id(Plugins.release_plugin_id) version Vers.release_plugin
 }
 
 group = "com.mcdodik"

@@ -36,7 +36,7 @@ fun main() {
 
     val project = environment.project
 
-    val file = File("src/main/kotlin/com/mcdodik/zbatis/FindUsers.kt")
+    val file = File("src/main/kotlin/com/bftcom/rr/mybatis/linter/tbatis/FindUsers.kt")
     val text = file.readText()
     val ktFile = KtPsiFactory(project).createFile(file.name, text)
 
