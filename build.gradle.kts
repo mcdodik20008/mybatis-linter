@@ -1,3 +1,5 @@
+import io.gitlab.arturbosch.detekt.Detekt
+
 plugins {
     `java-library`
     id("maven-publish")
@@ -7,7 +9,7 @@ plugins {
 }
 
 group = "com.mcdodik"
-version = "1.0.3.21"
+version = "1.0.4.3"
 
 repositories {
     mavenCentral()
@@ -15,6 +17,9 @@ repositories {
 
 dependencies {
     implementation("org.springframework:spring-core:5.3.21")
+
+    implementation("org.mybatis:mybatis:3.5.9")
+    implementation("org.mybatis:mybatis-spring:2.0.7")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
@@ -36,6 +41,10 @@ tasks.jar {
     manifest {
         attributes["Plugin-Class"] = "com.mcdodik.sql.linter.SqlRuleSetProvider"
     }
+}
+
+tasks.withType<Detekt>().configureEach {
+    exclude("**/dummyparams/**")
 }
 
 tasks.test {
