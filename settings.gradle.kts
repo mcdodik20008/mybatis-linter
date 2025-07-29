@@ -14,7 +14,3 @@ pluginManagement {
 }
 
 rootProject.name = "rr-mybatis-linter"
-
-include(
-    ":rrbpm-mybatis-linter",
-)

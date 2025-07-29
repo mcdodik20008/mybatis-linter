@@ -2,15 +2,21 @@ import io.gitlab.arturbosch.detekt.Detekt
 import kotlin.properties.ReadOnlyProperty
 
 plugins {
+    base
     `java-library`
-    id("maven-publish")
-    kotlin("jvm") version "1.7.10"
-    kotlin("plugin.spring") version "1.7.10"
+    id(Plugins.maven_publish)
+    id(Plugins.java_gradle_plugin)
+    kotlin(Plugins.jvm) version "1.7.10" apply false
+
     id(Plugins.detekt_plugin) version Vers.detekt_plugin
     id(Plugins.release_plugin_id) version Vers.release_plugin
 }
 
-group = "com.mcdodik"
+apply {
+    plugin(Plugins.idea)
+}
+
+group = ProjectGroup
 
 repositories {
     if (System.getenv("nexusUrl") != null) {
@@ -27,21 +33,16 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework:spring-core:5.3.21")
+    implementation(Libs.mybatis)
 
-    implementation("org.mybatis:mybatis:3.5.9")
-    implementation("org.mybatis:mybatis-spring:2.0.7")
-
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-    implementation("io.gitlab.arturbosch.detekt:detekt-api:1.22.0")
-    testImplementation("io.gitlab.arturbosch.detekt:detekt-test:1.22.0")
+    implementation(Libs.detekt)
 
     // Для тестов
-    testImplementation("io.kotest:kotest-assertions-core:5.8.0")
-    testImplementation("io.kotest:kotest-runner-junit5:5.8.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation(Libs.detekt_test)
+    testImplementation(Libs.kotest_core)
+    testImplementation(Libs.kotest_junit)
+    testImplementation(Libs.kotest_jupiter)
+    testRuntimeOnly(Libs.kotest_jupiter_engie)
 }
 
 java {
@@ -50,7 +51,7 @@ java {
 
 tasks.jar {
     manifest {
-        attributes["Plugin-Class"] = "com.mcdodik.sql.linter.SqlRuleSetProvider"
+        attributes["Plugin-Class"] = "com.bftcom.rr.mybatis.linter.SqlRuleSetProvider"
     }
 }
 
