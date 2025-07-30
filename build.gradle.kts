@@ -6,7 +6,7 @@ plugins {
     `java-library`
     id(Plugins.maven_publish)
     id(Plugins.java_gradle_plugin)
-    kotlin(Plugins.jvm) version "1.7.10" apply false
+    kotlin(Plugins.jvm) version "1.7.10"
 
     id(Plugins.detekt_plugin) version Vers.detekt_plugin
     id(Plugins.release_plugin_id) version Vers.release_plugin
