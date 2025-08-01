@@ -1,11 +1,12 @@
-package com.mcdodik.rr.mybatis.linter.mybatis.vatiants
+package com.mcdodik.rr.mybatis.linter.mybatis.variants
 
 import com.mcdodik.rr.mybatis.linter.methods.SqlVariant
 import com.mcdodik.rr.mybatis.linter.printer.Printer
 
 object SqlVariantFlattener {
 
-    private const val MAX_VARIANTS: Int = 9000
+    private val MAX_VARIANTS: Int =
+        System.getProperty("sqlVariantMax")?.toIntOrNull() ?: 9000
     private var variantCount = 0
 
     fun flatten(root: SqlNode): List<SqlVariant> {

@@ -5,7 +5,7 @@ import com.mcdodik.rr.mybatis.linter.methods.SqlMethodInfo
 import com.mcdodik.rr.mybatis.linter.methods.SqlParameter
 import com.mcdodik.rr.mybatis.linter.methods.SqlVariant
 import com.mcdodik.rr.mybatis.linter.mybatis.dummyparams.FallbackParamContext
-import com.mcdodik.rr.mybatis.linter.mybatis.vatiants.SqlVariantGenerator
+import com.mcdodik.rr.mybatis.linter.mybatis.variants.SqlVariantGenerator
 import com.mcdodik.rr.mybatis.linter.printer.Printer
 import io.github.detekt.psi.fileName
 import java.io.File
@@ -25,7 +25,7 @@ object MyBatisSqlLoader {
         val mapperXmlFile = FilesystemXmlFinder.findXmlByPackageName(resourcePath)
             ?: return emptyMap()
 
-        Printer.pprintln("FOUND XML: $resourcePath}")
+        Printer.pprintln("FOUND XML: $resourcePath")
 
         return cache.getOrPut(resourcePath) {
             parseMappedStatements(resourcePath, mapperXmlFile)

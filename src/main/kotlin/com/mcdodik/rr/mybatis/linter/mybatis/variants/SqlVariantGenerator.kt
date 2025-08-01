@@ -1,4 +1,4 @@
-package com.mcdodik.rr.mybatis.linter.mybatis.vatiants
+package com.mcdodik.rr.mybatis.linter.mybatis.variants
 
 import com.mcdodik.rr.mybatis.linter.methods.SqlVariant
 import com.mcdodik.rr.mybatis.linter.printer.Printer

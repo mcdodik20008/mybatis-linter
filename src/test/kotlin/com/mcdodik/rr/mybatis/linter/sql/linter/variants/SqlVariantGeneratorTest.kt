@@ -1,6 +1,6 @@
 package com.mcdodik.rr.mybatis.linter.sql.linter.variants
 
-import com.mcdodik.rr.mybatis.linter.mybatis.vatiants.SqlVariantGenerator
+import com.mcdodik.rr.mybatis.linter.mybatis.variants.SqlVariantGenerator
 import java.io.File
 import org.apache.ibatis.builder.xml.XMLMapperBuilder
 import org.apache.ibatis.mapping.MappedStatement

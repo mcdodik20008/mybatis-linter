@@ -1,4 +1,4 @@
-package com.mcdodik.rr.mybatis.linter.mybatis.vatiants
+package com.mcdodik.rr.mybatis.linter.mybatis.variants
 
 import org.w3c.dom.Element
 import org.w3c.dom.Node

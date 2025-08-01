@@ -1,4 +1,4 @@
-package com.mcdodik.rr.mybatis.linter.mybatis.vatiants
+package com.mcdodik.rr.mybatis.linter.mybatis.variants
 
 sealed class SqlNode {
     data class Static(val sql: String = "") : SqlNode()
