@@ -1,5 +1,3 @@
-import io.gitlab.arturbosch.detekt.Detekt
-
 plugins {
     base
     `java-library`
@@ -32,10 +30,6 @@ tasks.jar {
     manifest {
         attributes["Plugin-Class"] = "com.mcdodik.rr.mybatis.linter.SqlRuleSetProvider"
     }
-}
-
-tasks.withType<Detekt>().configureEach {
-    exclude("**/dummyparams/**")
 }
 
 tasks.test {

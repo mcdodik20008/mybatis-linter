@@ -7,20 +7,18 @@ import com.mcdodik.rr.mybatis.linter.methods.SqlVariant
 import com.mcdodik.rr.mybatis.linter.mybatis.dummyparams.FallbackParamContext
 import com.mcdodik.rr.mybatis.linter.mybatis.variants.SqlVariantGenerator
 import com.mcdodik.rr.mybatis.linter.printer.Printer
-import io.github.detekt.psi.fileName
 import java.io.File
 import java.sql.SQLException
 import java.util.concurrent.ConcurrentHashMap
 import org.apache.ibatis.builder.xml.XMLMapperBuilder
 import org.apache.ibatis.mapping.MappedStatement
 import org.apache.ibatis.session.Configuration
-import org.jetbrains.kotlin.psi.KtFile
 
 object MyBatisSqlLoader {
 
     private val cache: MutableMap<String, List<SqlMethodInfo>> = ConcurrentHashMap()
 
-    fun loadSql(ktFile: KtFile): Map<String, SqlMethodInfo> {
+    fun loadSql(ktFile: Any): Map<String, SqlMethodInfo> {
         val resourcePath = resolveXmlPath(ktFile)
         val mapperXmlFile = FilesystemXmlFinder.findXmlByPackageName(resourcePath)
             ?: return emptyMap()
@@ -32,12 +30,13 @@ object MyBatisSqlLoader {
         }.associateBy { it.id.substringAfterLast('.') }
     }
 
-    private fun resolveXmlPath(ktFile: KtFile): String {
-        val packagePath = ktFile.packageFqNameByTree.asString().replace('.', '/')
-        val baseName = ktFile.fileName.removeSuffix(".kt")
-        return "$packagePath/$baseName.xml".also {
-            Printer.pprintln("Resolve xml path: $it")
-        }
+    private fun resolveXmlPath(ktFile: Any): String {
+//        val packagePath = ktFile.packageFqNameByTree.asString().replace('.', '/')
+//        val baseName = ktFile.fileName.removeSuffix(".kt")
+//        return "$packagePath/$baseName.xml".also {
+//            Printer.pprintln("Resolve xml path: $it")
+//        }
+        return ""
     }
 
     private fun parseMappedStatements(resourcePath: String, file: File): List<SqlMethodInfo> {
