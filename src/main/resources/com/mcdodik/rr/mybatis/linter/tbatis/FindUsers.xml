@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mcdodik.rr.mybatis.linter.tbatis.FindUsers">
+
+    <select id="findUsers" resultType="map">
+        SELECT * FROM users
+        <where>
+            <if test="login == null">
+                AND login IS NULL
+            </if>
+            <if test="date.isAfter(now)">
+                AND created_at > #{date}
+            </if>
+            <if test="trashBasket?.isEmpty() == true">
+                AND trash_flag = false
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="esto" type="com.mcdodik.rr.mybatis.linter.tbatis.Esto">
+        <result property="unsiCode" column="unsi_code"/>
+        <result property="siaCode" column="sia_code"/>
+        <result property="region" column="region"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <resultMap id="siaUserPageable" type="com.mcdodik.rr.mybatis.linter.tbatis.PageData">
+        <id property="key" column="query_key"/>
+        <result property="totalCount" column="total_count"/>
+        <result property="limit" column="query_limit"/>
+        <result property="offset" column="query_offset"/>
+        <collection
+                property="data"
+                javaType="java.util.ArrayList"
+                ofType="com.mcdodik.rr.mybatis.linter.tbatis.SiaUser"
+                resultMap="siaUser"/>
+    </resultMap>
+
+    <resultMap id="siaUser" type="com.mcdodik.rr.mybatis.linter.tbatis.SiaUser">
+        <id property="login" column="login"/>
+        <result property="unsiEstoCode" column="unsi_esto_code"/>
+        <result property="siaEstoCode" column="sia_esto_code"/>
+        <result property="region" column="region"/>
+        <result property="department" column="department"/>
+        <result property="position" column="position"/>
+        <result property="status" column="status"/>
+        <result property="lastName" column="last_name"/>
+        <result property="firstName" column="first_name"/>
+        <result property="secondName" column="second_name"/>
+        <result property="gender" column="gender"/>
+        <result property="email" column="email"/>
+        <result property="validUntil" column="valid_until"/>
+        <result property="blockingTime" column="blocking_time"/>
+        <result property="estoName" column="esto_name"/>
+        <result property="systemRole" column="system_role"/>
+    </resultMap>
+
+    <select id="findEsto" resultMap="esto" parameterType="java.lang.String" flushCache="true">
+        select
+        unsi_code,
+        sia_code,
+        region,
+        "name"
+        from rrbpm_ups.esto
+        where sia_code is not null
+        <if test="unsiCode != null">and unsi_code like '%${unsiCode}%'</if>
+        <if test="siaCode != null">and sia_code = #{siaCode}</if>
+        <if test="region != null">and region = #{region}</if>
+        <if test="name != null">and "name" = #{name}</if>
+        <if test="sort_field != null">order by ${sortField}</if>
+        <if test="sort_direction != null">order by ${sortDirection}</if>
+        <if test="limit != null">limit ${limit}</if>;
+    </select>
+
+    <select id="findSiaUser" resultMap="siaUserPageable" flushCache="true">
+        select
+        count(*) OVER() AS total_count,
+        #{limit} as query_limit,
+        #{offset} as query_offset,
+        'findSiaUser' as query_key,
+
+        u.login,
+        u.unsi_esto_code,
+        u.sia_esto_code,
+        u.region,
+        u.department,
+        u.position,
+        u.status,
+        u.last_name,
+        u.first_name,
+        u.second_name,
+        u.gender,
+        u.email,
+        u.valid_until,
+        u.blocking_time,
+        u.system_role,
+
+        <choose>
+            <when test="temp != true">
+                coalesce( s.spec_sender, '{}') as spec_sender,
+                coalesce( s.spec_deal, '{}') as spec_deal,
+                coalesce( s.spec_miv, '{}') as spec_miv,
+                coalesce( s.spec_entering_information, '{}') as spec_entering_information,
+            </when>
+        </choose>
+        coalesce( s.spec_properties, '{}') as spec_properties,
+        coalesce( s.spec_service_types, '{}') as spec_service_types,
+        coalesce( s.spec_room_purpose, '{}') as spec_room_purpose,
+        coalesce( s.spec_object_purpose, '{}') as spec_object_purpose,
+        coalesce( s.spec_extract, '{}') as spec_extract,
+        coalesce( s.spec_copy, '{}') as spec_copy,
+
+        <choose>
+            <when test="temp == true">true as f_temp,</when>
+            <otherwise>false as f_temp,</otherwise>
+        </choose>
+        e.name as esto_name
+
+        from
+        <choose>
+            <when test="temp == true">
+                rrbpm_ups.temp_sia_user as u
+            </when>
+            <otherwise>
+                rrbpm_ups.sia_user as u
+            </otherwise>
+        </choose>
+        left join
+        <choose>
+            <when test="temp == true">
+                rrbpm_ups.temp_user_specs as s
+            </when>
+            <otherwise>
+                rrbpm_ups.user_specs as s
+            </otherwise>
+        </choose>
+        on u.login = s.login
+        left join rrbpm_ups.esto as e on u.sia_esto_code = e.sia_code
+        where u."login" is not null
+
+        <if test="logins != null &amp;&amp; !logins.isEmpty()">
+            <choose>
+                <when test="searchType == null or searchType.logins == null or searchType.logins.text == 'EQ'">
+                    and LOWER(u."login") in
+                    <foreach collection="logins" item="login" open="(" separator="," close=")">
+                        LOWER(#{login})
+                    </foreach>
+                </when>
+                <when test="searchType.logins.text == 'CONTAINS'">
+                    AND (
+                    <foreach collection="logins" item="login" separator="OR">
+                        u.login ILIKE '%' || #{login} || '%'
+                    </foreach>
+                    )
+                </when>
+            </choose>
+        </if>
+
+        <if test="firstName != null">
+            <choose>
+                <when test="searchType == null or searchType.firstName == null or searchType.firstName.text == 'EQ'">
+                    and LOWER(first_name) = LOWER(#{firstName})
+                </when>
+                <when test="searchType.firstName.text == 'CONTAINS'">
+                    and first_name ILIKE '%${firstName}%'
+                </when>
+            </choose>
+        </if>
+        <if test="secondName != null">
+            <choose>
+                <when test="searchType == null or searchType.firstName == null or searchType.secondName.text == 'EQ'">
+                    and LOWER(second_name) = LOWER(#{secondName})
+                </when>
+                <when test="searchType.secondName.text == 'CONTAINS'">
+                    and u.second_name ILIKE '%${secondName}%'
+                </when>
+            </choose>
+        </if>
+        <if test="lastName != null">
+            <choose>
+                <when test="searchType == null or searchType.lastName == null or searchType.lastName.text == 'EQ'">
+                    and LOWER(last_name) = LOWER(#{lastName})
+                </when>
+                <when test="searchType.lastName.text == 'CONTAINS'">
+                    and last_name ILIKE '%${lastName}%'
+                </when>
+            </choose>
+        </if>
+        <if test="unsiEstoCodes != null &amp;&amp; !unsiEstoCodes.isEmpty()">
+            and unsi_esto_code in
+            <foreach collection="unsiEstoCodes" item="unsiEstoCode" open="(" separator="," close=")">
+                #{unsiEstoCode}
+            </foreach>
+        </if>
+        <if test="region != null">and u.region = #{region}</if>
+
+        <choose>
+            <when test="roleCodes != null &amp;&amp; !roleCodes.isEmpty()">
+                and u."login" in (
+                select r."login"
+                from rrbpm_ups.sia_user_role as r
+                where r.role_code in
+                <foreach collection="roleCodes" item="roleCode" open="(" separator="," close=")">#{roleCode}</foreach>
+                )
+            </when>
+            <otherwise>
+                <if test="roleNames != null &amp;&amp; !roleNames.isEmpty()">
+                    and u."login" in (
+                    select r."login"
+                    from rrbpm_ups.sia_user_role as r
+                    where r.role_name in
+                    <foreach collection="roleNames" item="roleName" open="(" separator="," close=")">#{roleName}</foreach>
+                    )
+                </if>
+            </otherwise>
+        </choose>
+
+        <if test="specsSender != null &amp;&amp; !specsSender.isEmpty()">
+            <foreach collection="specsSender" item="specSender">
+                and #{specSender} = ANY(s.spec_sender)
+            </foreach>
+        </if>
+        <if test="specsDeal != null &amp;&amp; !specsDeal.isEmpty()">
+            <foreach collection="specsDeal" item="specDeal">
+                and #{specDeal} = ANY(s.spec_deal)
+            </foreach>
+        </if>
+        <if test="specsMiv != null &amp;&amp; !specsMiv.isEmpty()">
+            <foreach collection="specsMiv" item="specMiv">
+                and #{specMiv} = ANY(s.spec_miv)
+            </foreach>
+        </if>
+        <if test="specsEnteringInformation != null &amp;&amp; !specsEnteringInformation.isEmpty()">
+            <foreach collection="specsEnteringInformation" item="specEnteringInformation">
+                and #{specEnteringInformation} = ANY(s.spec_entering_information)
+            </foreach>
+        </if>
+        <if test="specsProperties != null &amp;&amp; !specsProperties.isEmpty()">
+            <foreach collection="specsProperties" item="specProperties">
+                and #{specProperties} = ANY(s.spec_properties)
+            </foreach>
+        </if>
+        <if test="specsServiceTypes != null &amp;&amp; !specsServiceTypes.isEmpty()">
+            <foreach collection="specsServiceTypes" item="specServiceTypes">
+                and #{specServiceTypes} = ANY(s.spec_service_types)
+            </foreach>
+        </if>
+        <if test="specsRoomPurpose != null &amp;&amp; !specsRoomPurpose.isEmpty()">
+            <foreach collection="specsRoomPurpose" item="specRoomPurpose">
+                and #{specRoomPurpose} = ANY(s.spec_room_purpose)
+            </foreach>
+        </if>
+        <if test="specsObjectPurpose != null &amp;&amp; !specsObjectPurpose.isEmpty()">
+            <foreach collection="specsObjectPurpose" item="specObjectPurpose">
+                and #{specObjectPurpose} = ANY(s.spec_object_purpose)
+            </foreach>
+        </if>
+        <if test="specsExtract != null &amp;&amp; !specsExtract.isEmpty()">
+            <foreach collection="specsExtract" item="specExtract">
+                and #{specExtract} = ANY(s.spec_extract)
+            </foreach>
+        </if>
+        <if test="specsCopy != null &amp;&amp; !specsCopy.isEmpty()">
+            <foreach collection="specsCopy" item="specCopy">
+                and #{specCopy} = ANY(s.spec_copy)
+            </foreach>
+        </if>
+
+        <if test="sortField != null">
+            order by ${sortField} <if test="sortDirection != null">${sortDirection}</if>
+        </if>
+
+        <if test="limit != null and limit > 0">
+            limit #{limit}
+        </if>
+        <if test="offset != null and offset > 0">
+            offset #{offset}
+        </if>
+        ;
+    </select>
+
+</mapper>

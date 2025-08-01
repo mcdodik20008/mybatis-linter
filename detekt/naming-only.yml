@@ -61,7 +61,7 @@ naming:
   # Проверка на допустимые package'и (например: com.myproject.module)
   InvalidPackageDeclaration:
     active: true
-    rootPackage: 'com.bftcom'
+    rootPackage: 'com.mcdodik'
     requireRootInDeclaration: false
 
   # Правила для имён параметров лямбд (по умолчанию разрешаем _, а можно запретить)

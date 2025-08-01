@@ -1,5 +1,5 @@
-import com.bftcom.rr.mybatis.linter.mybatis.MyBatisSqlLoader
-import com.bftcom.rr.mybatis.linter.printer.Printer
+import com.mcdodik.rr.mybatis.linter.mybatis.MyBatisSqlLoader
+import com.mcdodik.rr.mybatis.linter.printer.Printer
 import java.io.File
 import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
 import org.jetbrains.kotlin.cli.common.environment.setIdeaIoUseFallback
@@ -36,7 +36,7 @@ fun main() {
 
     val project = environment.project
 
-    val file = File("src/main/kotlin/com/bftcom/rr/mybatis/linter/tbatis/FindUsers.kt")
+    val file = File("src/main/kotlin/com/mcdodik/rr/mybatis/linter/tbatis/FindUsers.kt")
     val text = file.readText()
     val ktFile = KtPsiFactory(project).createFile(file.name, text)
 

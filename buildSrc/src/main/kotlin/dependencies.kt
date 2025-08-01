@@ -24,7 +24,6 @@ object Plugins {
     const val java_gradle_plugin = "org.gradle.java-gradle-plugin"
     const val maven_publish = "maven-publish"
     const val detekt_plugin = "io.gitlab.arturbosch.detekt"
-    const val release_plugin_id = "net.researchgate.release"
 
 }
 
@@ -41,4 +40,4 @@ object Libs {
     const val kotest_jupiter_engie = "org.junit.jupiter:junit-jupiter-engine:${Vers.kotest_jupiter_engie}"
 }
 
-const val ProjectGroup = "com.bftcom.rr.mybatis.linter"
+const val ProjectGroup = "com.mcdodik.rr.mybatis.linter"
